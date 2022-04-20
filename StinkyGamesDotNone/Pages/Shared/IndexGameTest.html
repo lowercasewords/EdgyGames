@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body{
+                padding-bottom: 10000px;
+                background-color:grey;
+            }
+            header{
+                top: 0px;
+                background-color:rgba(35, 34, 46, 0.562);
+                width: 100%;
+                height: 70px;
+                color:rgb(25, 32, 70);
+                position: fixed;
+                display: flex;
+            }
+            main{
+                z-index: 1;
+                box-sizing:border-box 10px 10px;
+                background-color: yellow;
+                position:relative;
+                top: 100px;
+                /* position */
+            }
+            .ul-header-left{
+                list-style-type: none;
+                width: fit-content;
+                /* height: 10px; */
+                top:0px;
+                background-color: green;
+
+                padding-left: 20px;
+                /* left: 0px; */
+                position: absolute;
+                height: 20px;
+                width: fit-content;
+
+            }
+            .ul-header-right{
+                list-style-type: none;
+                width: fit-content;
+                height: 10px;
+                top:5px;
+                background-color: green;
+
+                padding-right: 20px;
+                right: 0px;
+                position:absolute;
+                /* height:fit-content;
+                width: fit-content; */
+            }
+            .header-li{
+                width: fit-content;
+                height: fit-content;
+            }
+            .profile-pic{
+                width:40px;
+                height:40px;
+            }
+        </style>
+    </head>
+<body>
+    <header>
+        <ul class="ul-header-left">
+            <li>
+                <h2>Test Web Header</h2>
+            </li>
+        </ul>
+        <ul class="ul-header-right">
+            <li>
+                <h2>test text</h2>
+            </li>
+            <li>
+                <a href="#">
+                    <img class="profile-pic" src="/Users/arturagalarian/Desktop/Images/pexels-photo-1061640.jpeg" alt="Profile">
+                </a>
+            </li>
+        </ul>
+    </header>
+    <main>
+        <div>
+            <p>stuff</p>
+        </div>
+    </main>
+</body>
+</html>

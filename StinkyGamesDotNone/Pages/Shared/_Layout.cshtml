@@ -1,61 +1,95 @@
 ﻿<!DOCTYPE html>
 <html>
-<body>
-    <header>
-        <h4>I'm the header of this page!</h4>
-        <h2>I'm another header lmao</h2>
-    </header>
-    <main style="">
-        @* @RenderBody() *@
-    </main>
-</body>
-</html>
-@*<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - StinkyGamesDotNone</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <script></script>
+    <style>
+        body {
+            background-color: grey;
+        }
+
+        header {
+            z-index: 1;
+            top: 0px;
+            background-color: rgb(158, 158, 158);
+            position: sticky;
+            height: 5%;
+            margin-bottom: 5%;
+        }
+            /* I know I could do 'header ul'{ }, I just want to be more specific*/
+            header > ul {
+                position: relative;
+                text-align: center;
+                top: 25%
+            }
+
+                header > ul > li {
+                    margin: 0px 0px 20px 20px;
+                    display: inline-block;
+                }
+
+                    header > ul > li > a {
+                        text-decoration: none;
+                    }
+
+                    header > ul > li span {
+                        color: blue
+                    }
+
+                    header > ul > li > a > span:hover {
+                        background-color: rgb(219, 221, 219);
+                    }
+
+        nav {
+            background-color: aqua;
+            width: 13%;
+        }
+
+        main {
+            z-index: 0;
+            box-sizing: border-box 10px 10px;
+            background-color: rgb(153, 153, 153);
+            position: relative;
+            height: 1000px;
+        }
+
+        #header-profile-pic {
+            vertical-align: middle;
+            width: 20px;
+            height: 20px;
+        }
+
+        footer {
+            margin-top: 5%;
+            background-color: brown;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">StinkyGamesDotNone</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+        <ul>
+            <li>
+                <span>Test Web Header</span>
+            </li>
+            <li>
+                <span>another message</span>
+            </li>
+            <li>
+                <a href="#">
+                    <span>test text</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <img id="header-profile-pic" src="/Users/arturagalarian/Desktop/Images/pexels-photo-1061640.jpeg" alt="Profile">
+                </a>
+            </li>
+        </ul>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2022 - StinkyGamesDotNone - <a asp-area="" asp-page="/Privacy">Privacy</a>
-        </div>
-    </footer>
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
-    @RenderSection("Scripts", required: false)
+    <main>
+        @RenderBody()
+    </main>
+        <footer>
+            <span>footer</span>
+        </footer>
 </body>
-</html>*@
+</html>

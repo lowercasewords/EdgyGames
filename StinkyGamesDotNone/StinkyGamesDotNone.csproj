@@ -1,22 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp6.0</TargetFramework>
     <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.23" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.4" />
+    <PackageReference Include="MySqlConnector" Version="2.1.8" />
+    <PackageReference Include="HtmlTags" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Pages\Games\" />
     <None Remove="Pages\Games\SudokuGame\" />
     <None Remove="Pages\Games\MineSweeper\" />
+    <None Remove="Pages\Games\SudokuGame\Images\" />
+    <None Remove="Pages\Games\MineSweeperGame\Information\" />
+    <None Remove="HtmlTags" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Pages\Games\" />
     <Folder Include="Pages\Games\SudokuGame\" />
     <Folder Include="Pages\Games\MineSweeperGame\" />
+    <Folder Include="Pages\Games\SudokuGame\Information\" />
+    <Folder Include="Pages\Games\MineSweeperGame\Information\" />
+    <Folder Include="wwwroot\css\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\css\" />
   </ItemGroup>
 </Project>

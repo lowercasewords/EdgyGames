@@ -1,14 +1,50 @@
 ﻿@page
-@model IndexModel
+@model StinkyGamesDotNone.Pages.IndexModel
+@using HtmlTags;
 @{
-    ViewData["Title"] = "Home page";
-}
+    ViewData["Title"] = "Index Page Bruh";
 
-<div>
-    <h3>Choose the game!</h3>
-    <ul>
-        <li>
-            <a asp-page="/Games/SudokuGame/Sudoku">Sudoku</a>
-        </li>
-    </ul>
-</div>
+    int testlength = 4;
+
+    HtmlTag tbl = new HtmlTag("table");
+    tbl.Attr("id", "games");
+
+    void AddGames()
+    {
+        HtmlTag row = new HtmlTag("tr");
+        for (int i = 1; i <= testlength; i++) // populating a created row
+        {
+            HtmlTag col = new HtmlTag("th");
+            row.Append(col);
+
+            HtmlTag link = new HtmlTag("a");
+            link.Attr("href", "#");
+            col.Append(link);
+
+            HtmlTag imgContainer = new HtmlTag("div");
+            imgContainer.Attr("class", "game-image");
+            link.Append(imgContainer);
+            HtmlTag img = new HtmlTag("img");
+            // change image here:
+            img.Attr("src", "");
+            img.Attr("alt", "image error");
+            imgContainer.Append(img);
+            HtmlTag detailsContainer = new HtmlTag("div");
+            detailsContainer.Attr("class", "game-details");
+            link.Append(detailsContainer);
+            HtmlTag details = new HtmlTag("span");
+            // change description here:
+            details.AppendText("Description");
+            detailsContainer.Append(details);
+
+            if (i % 3 == 0)
+            {
+                tbl.Append(row);
+                row = new HtmlTag("tr");
+            }
+        }
+        tbl.Append(row);
+    }
+    AddGames();
+}
+@tbl

@@ -11,6 +11,7 @@ using MySqlConnector;
 
 namespace StinkyGamesDotNone.Pages
 {
+	[Produces("application/json")]
 	public class IndexModel : PageModel
 	{
 		private readonly ILogger<IndexModel> _logger;
@@ -20,16 +21,9 @@ namespace StinkyGamesDotNone.Pages
 			_logger = logger;
 		}
 
-		/// <summary>
-        /// Sends info links to its Razor Page
-        /// </summary>
-		//public FileInfo[] SendGameInfo()
-  //      {
-		//	FileInfo[] files = 
-  //      }
 		public void OnGet()
 		{
-
+			//MySqlConnection conn = new MySqlConnection()
 		}
 	}
 

@@ -16,18 +16,31 @@
     <None Remove="Pages\Games\SudokuGame\" />
     <None Remove="Pages\Games\MineSweeper\" />
     <None Remove="Pages\Games\SudokuGame\Images\" />
-    <None Remove="Pages\Games\MineSweeperGame\Information\" />
     <None Remove="HtmlTags" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Pages\Games\" />
     <Folder Include="Pages\Games\SudokuGame\" />
     <Folder Include="Pages\Games\MineSweeperGame\" />
-    <Folder Include="Pages\Games\SudokuGame\Information\" />
-    <Folder Include="Pages\Games\MineSweeperGame\Information\" />
     <Folder Include="wwwroot\css\" />
+    <Folder Include="wwwroot\GamesInfo\" />
+    <Folder Include="wwwroot\GamesInfo\SudokuGame\" />
+    <Folder Include="wwwroot\GamesInfo\MineSweeperGame\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\css\" />
+    <Content Remove="wwwroot\GamesInfo\" />
+    <Content Remove="wwwroot\GamesInfo\SudokuGae\" />
+    <Content Remove="wwwroot\GamesInfo\SudokuGame\cover3.jpeg" />
+    <Content Remove="wwwroot\GamesInfo\SudokuGame\details.txt" />
+    <Content Remove="wwwroot\GamesInfo\MineSweeperGame\" />
+    <Content Remove="wwwroot\GamesInfo\MineSweeperGame\cover3.jpeg" />
+    <Content Remove="wwwroot\GamesInfo\MineSweeperGame\details.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\GamesInfo\SudokuGame\cover3.jpeg" />
+    <None Include="wwwroot\GamesInfo\SudokuGame\details.txt" />
+    <None Include="wwwroot\GamesInfo\MineSweeperGame\cover3.jpeg" />
+    <None Include="wwwroot\GamesInfo\MineSweeperGame\details.txt" />
   </ItemGroup>
 </Project>

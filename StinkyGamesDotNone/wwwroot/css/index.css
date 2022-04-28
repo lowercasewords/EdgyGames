@@ -1,0 +1,99 @@
+﻿body {
+    background-color: grey;
+}
+
+#header-profile-pic {
+    vertical-align: middle;
+    width: 20px;
+    height: 20px;
+}
+
+header {
+    z-index: 1;
+    top: 0px;
+    background-color: rgb(158, 158, 158);
+    position: sticky;
+    margin-bottom: 5%;
+    height: 50px;
+    vertical-align: middle;
+}
+    /* I know I could do 'header ul'{ }, I just want to be more specific*/
+    header > ul {
+        position: relative;
+        text-align: center;
+    }
+
+        header > ul > li {
+            height: 15%;
+            display: inline-block;
+        }
+
+            header > ul > li > a {
+                text-decoration: none;
+            }
+
+            header > ul > li span {
+                color: blue
+            }
+
+            header > ul > li > a > span:hover {
+                background-color: rgb(219, 221, 219);
+            }
+
+main {
+    z-index: 0;
+/*    box-sizing: border-box 10px 10px;*/
+    background-color: rgb(153, 153, 153);
+    position: relative;
+    height: fit-content;
+    margin-right: auto;
+    margin-left: auto;
+    width: 70%;
+}
+
+#games {
+    width: auto;
+    height: auto;
+    margin-right: auto;
+    margin-left: auto;
+    /* background-color: brown; */
+}
+
+    #games th {
+        border-color: aliceblue;
+        border: solid 10px;
+        width: 33%;
+        height: 33%;
+    }
+
+th a {
+    text-decoration: none;
+    color: black
+}
+
+th .game-image {
+    width: 100%;
+    height: 60%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+    th .game-image img {
+        width: 100%;
+        height: 100%;
+    }
+
+th .game-details {
+    width: 100%;
+    height: 40%;
+}
+
+.game-details span {
+    text-align: center;
+    max-height: 50%;
+}
+
+footer {
+    margin-top: 5%;
+    background-color: brown;
+}

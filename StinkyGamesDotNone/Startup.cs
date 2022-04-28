@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
+using MySqlConnector;
 
 namespace StinkyGamesDotNone
 {
@@ -26,6 +27,7 @@ namespace StinkyGamesDotNone
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+            services.AddTransient<MySqlConnection>(x => new MySqlConnection(Configuration["ConnectionStrings: Default"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

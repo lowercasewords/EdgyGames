@@ -1,6 +1,7 @@
 ﻿@page
 @model StinkyGamesDotNone.Pages.IndexModel
 @using HtmlTags;
+@using System.IO;
 @{
     ViewData["Title"] = "Index Page Bruh";
 
@@ -8,6 +9,9 @@
 
     HtmlTag tbl = new HtmlTag("table");
     tbl.Attr("id", "games");
+
+    var gameDirs = new DirectoryInfo("wwwroot/GamesInfo").GetDirectories();
+    @*DirectoryInfo[] gameDirs = new DirectoryInfo()GetDirectories("wwwroot/GamesInfo");*@
 
     void AddGames()
     {
@@ -26,7 +30,7 @@
             link.Append(imgContainer);
             HtmlTag img = new HtmlTag("img");
             // change image here:
-            img.Attr("src", "");
+            img.Attr("src", "Pages/Games/SudokuGame/Information/cover3.jpeg");
             img.Attr("alt", "image error");
             imgContainer.Append(img);
             HtmlTag detailsContainer = new HtmlTag("div");
@@ -48,3 +52,4 @@
     AddGames();
 }
 @tbl
+<image width="50" height="50" alt="alt text" src="wwwroot/Images/cover3.jpeg"></image>

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using Microsoft.AspNetCore.Html;
+using MySqlConnector;
 
 namespace StinkyGamesDotNone.Pages
 {
@@ -19,6 +20,13 @@ namespace StinkyGamesDotNone.Pages
 			_logger = logger;
 		}
 
+		/// <summary>
+        /// Sends info links to its Razor Page
+        /// </summary>
+		//public FileInfo[] SendGameInfo()
+  //      {
+		//	FileInfo[] files = 
+  //      }
 		public void OnGet()
 		{
 			

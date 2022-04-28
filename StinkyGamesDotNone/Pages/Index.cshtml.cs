@@ -29,7 +29,7 @@ namespace StinkyGamesDotNone.Pages
   //      }
 		public void OnGet()
 		{
-			
+
 		}
 	}
 

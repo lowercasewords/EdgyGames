@@ -29,7 +29,7 @@ namespace StinkyGamesDotNone.Pages
   //      }
 		public void OnGet()
 		{
-			
+			Console.WriteLine("Please don't pay attention on me");
 		}
 	}
 

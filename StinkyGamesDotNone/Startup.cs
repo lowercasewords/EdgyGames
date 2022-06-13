@@ -15,19 +15,20 @@ namespace StinkyGamesDotNone
 {
     public class Startup
     {
+        public IConfiguration _configuration;
+        public IWebHostEnvironment _env;
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
-            Configuration = configuration;
-            Env = env;
+            _configuration = configuration;
+            _env = env;
         }
 
-        public IConfiguration Configuration { get; }
-        public IWebHostEnvironment Env { get; set; }
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         { 
             services.AddRazorPages();
-            services.AddTransient(_ => new MySqlConnection(Configuration["ConnectionStrings: Default"]));
+            services.AddTransient(_ => new MySqlConnection(_configuration["ConnectionStrings: Default"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

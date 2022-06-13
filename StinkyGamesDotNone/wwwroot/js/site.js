@@ -2,3 +2,7 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your Javascript code.
+
+function useless_function() {
+    console.log("this is the Useless Function");
+}

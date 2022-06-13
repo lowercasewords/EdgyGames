@@ -7,30 +7,35 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Hosting;
 using MySqlConnector;
 
 namespace StinkyGamesDotNone.Pages
 {
+	//[Produces("application/json")]
 	public class IndexModel : PageModel
 	{
-		private readonly ILogger<IndexModel> _logger;
+		private readonly IWebHostEnvironment _webHostEnvironment;
 
-		public IndexModel(ILogger<IndexModel> logger)
-		{
-			_logger = logger;
-		}
+		/** <summary> Paths to game menu images </summary> */
+		public List<string> GameMenuImages { get; private set; } = new List<string>();
 
-		/// <summary>
-        /// Sends info links to its Razor Page
-        /// </summary>
-		//public FileInfo[] SendGameInfo()
-  //      {
-		//	FileInfo[] files = 
-  //      }
+		public IndexModel(IWebHostEnvironment webHost)
+        {
+			_webHostEnvironment = webHost;
+        }
+
 		public void OnGet()
 		{
-
-		}
+			var provider = new PhysicalFileProvider(_webHostEnvironment.WebRootPath);
+			var imageContents = provider.GetDirectoryContents("Images");
+			foreach (var image in imageContents)
+			{
+				GameMenuImages.Add("Images/" + image.Name);
+			}
+			//Page().ViewData["Title"] = "New title";
+        }
 	}
 
 }

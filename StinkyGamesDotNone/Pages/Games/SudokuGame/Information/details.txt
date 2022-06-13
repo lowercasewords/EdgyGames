@@ -1,1 +1,0 @@
-﻿This is the short description of my Szudoku Game I've made. Actually, it's not much about the game, it's just a test of synchronization between this text file and the html page. 

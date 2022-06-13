@@ -17,7 +17,7 @@ header {
     height: 50px;
     vertical-align: middle;
 }
-    /* I know I could do 'header ul'{ }, I just want to be more specific*/
+    /* I know I could do 'header ul{ }', I just want to be more specific*/
     header > ul {
         position: relative;
         text-align: center;

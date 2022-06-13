@@ -17,14 +17,27 @@ namespace StinkyGamesDotNone
     {
         public IConfiguration _configuration;
         public IWebHostEnvironment _env;
+        public MySqlConnection _mySqlConnection;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration;
             _env = env;
+
+            ConfigureDatabaseConn();
+            _mySqlConnection.Open();
+            Console.WriteLine(_mySqlConnection.State);
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        //private bool DatabaseConnCheck() => ;
+
+        private void ConfigureDatabaseConn()
+        {
+            string connString = _configuration.GetConnectionString("Default");
+            _mySqlConnection = new MySqlConnection(connectionString: connString);
+        }
+
+        //This method gets called by the runtime. Use this method to add services to the container. </summary> //
         public void ConfigureServices(IServiceCollection services)
         { 
             services.AddRazorPages();

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using MySqlConnector;
+
 namespace StinkyGamesDotNone
 {
     public class Program

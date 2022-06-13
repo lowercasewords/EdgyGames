@@ -56,8 +56,7 @@ ehthumbs_vista.db
 # Folder config file
 [Dd]esktop.ini
 
-# Project config file
-StinkyGamesDotNone/appsettings.Development.json
+
 
 # Recycle Bin used on file shares
 $RECYCLE.BIN/

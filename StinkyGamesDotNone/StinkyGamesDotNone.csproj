@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.4" />
-    <PackageReference Include="MySqlConnector" Version="2.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.5" />
+    <PackageReference Include="MySqlConnector" Version="2.1.10" />
     <PackageReference Include="HtmlTags" Version="8.1.1" />
   </ItemGroup>
 
@@ -17,15 +17,16 @@
     <None Remove="Pages\Games\MineSweeper\" />
     <None Remove="Pages\Games\SudokuGame\Images\" />
     <None Remove="HtmlTags" />
+    <None Remove="Pages\Games\WorladGame\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Pages\Games\" />
     <Folder Include="Pages\Games\SudokuGame\" />
     <Folder Include="Pages\Games\MineSweeperGame\" />
     <Folder Include="wwwroot\css\" />
-    <Folder Include="wwwroot\GamesInfo\" />
-    <Folder Include="wwwroot\GamesInfo\SudokuGame\" />
-    <Folder Include="wwwroot\GamesInfo\MineSweeperGame\" />
+    <Folder Include="wwwroot\Images\" />
+    <Folder Include="wwwroot\MineSweeperWWW\" />
+    <Folder Include="Pages\Games\WorladGame\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\css\" />
@@ -36,11 +37,9 @@
     <Content Remove="wwwroot\GamesInfo\MineSweeperGame\" />
     <Content Remove="wwwroot\GamesInfo\MineSweeperGame\cover3.jpeg" />
     <Content Remove="wwwroot\GamesInfo\MineSweeperGame\details.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="wwwroot\GamesInfo\SudokuGame\cover3.jpeg" />
-    <None Include="wwwroot\GamesInfo\SudokuGame\details.txt" />
-    <None Include="wwwroot\GamesInfo\MineSweeperGame\cover3.jpeg" />
-    <None Include="wwwroot\GamesInfo\MineSweeperGame\details.txt" />
+    <Content Remove="wwwroot\Information\cover3.jpeg" />
+    <Content Remove="wwwroot\Information\details.txt" />
+    <Content Remove="wwwroot\Information\" />
+    <Content Remove="wwwroot\Images\sudoku-game-cover.jpeg" />
   </ItemGroup>
 </Project>

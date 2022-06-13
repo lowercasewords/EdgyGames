@@ -1,55 +1,39 @@
 ﻿@page
 @model StinkyGamesDotNone.Pages.IndexModel
-@using HtmlTags;
-@using System.IO;
 @{
     ViewData["Title"] = "Index Page Bruh";
+    
+    Console.WriteLine(@Url.RouteUrl(Model.GameMenuImages[0]));
 
-    int testlength = 4;
+    Console.WriteLine("Do something");
 
-    HtmlTag tbl = new HtmlTag("table");
-    tbl.Attr("id", "games");
-
-    var gameDirs = new DirectoryInfo("wwwroot/GamesInfo").GetDirectories();
-    @*DirectoryInfo[] gameDirs = new DirectoryInfo()GetDirectories("wwwroot/GamesInfo");*@
-
-    void AddGames()
-    {
-        HtmlTag row = new HtmlTag("tr");
-        for (int i = 1; i <= testlength; i++) // populating a created row
-        {
-            HtmlTag col = new HtmlTag("th");
-            row.Append(col);
-
-            HtmlTag link = new HtmlTag("a");
-            link.Attr("href", "#");
-            col.Append(link);
-
-            HtmlTag imgContainer = new HtmlTag("div");
-            imgContainer.Attr("class", "game-image");
-            link.Append(imgContainer);
-            HtmlTag img = new HtmlTag("img");
-            // change image here:
-            img.Attr("src", "Pages/Games/SudokuGame/Information/cover3.jpeg");
-            img.Attr("alt", "image error");
-            imgContainer.Append(img);
-            HtmlTag detailsContainer = new HtmlTag("div");
-            detailsContainer.Attr("class", "game-details");
-            link.Append(detailsContainer);
-            HtmlTag details = new HtmlTag("span");
-            // change description here:
-            details.AppendText("Description");
-            detailsContainer.Append(details);
-
-            if (i % 3 == 0)
-            {
-                tbl.Append(row);
-                row = new HtmlTag("tr");
-            }
-        }
-        tbl.Append(row);
-    }
-    AddGames();
+    Console.WriteLine("Nothing");
 }
-@tbl
-<image width="50" height="50" alt="alt text" src="wwwroot/Images/cover3.jpeg"></image>
+<div id="game-menus">
+    <div id="sudoku-menu">
+        <a asp-page="Games/SudokuGame/Sudoku">
+            <img src="Images/sudoku-menu.jpeg"/>
+            <span>
+                This is the short description of my Sudoku Game I've made.
+                Actually, it's not much about the game,
+                it's just a test of synchronization between this text file and the html page.
+            </span>
+        </a>
+    </div>
+    <div id="mine-sweeper-menu">
+        <a asp-page="Games/MineSweeperGame/MineSweeper">
+            <img src="Images/mine-sweeper-menu.jpeg" alt="No Image" />
+            <span>
+                This is the description for Mine Sweeper
+            </span>
+        </a>
+    </div>
+    <div id="worlad-menu">
+        <a asp-page="Games/WorladGame/Worlad">
+            <img src="#" />
+            <span>
+                Practice words in a playable manner! Not a Quizlet rippoff I swear!
+            </span>
+        </a>
+    </div>
+</div>

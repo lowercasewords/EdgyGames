@@ -12,7 +12,7 @@ namespace StinkyGamesDotNone
 {
     public class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             //MySqlConnection mySqlConn = new MySqlConnection(Startup.Configuration.GetConnectionString("Default"));
             //try

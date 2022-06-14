@@ -1,0 +1,81 @@
+﻿body {
+    background-color: grey;
+}
+
+header {
+    z-index: 1;
+    top: 5px;
+    background-color: rgb(158, 158, 158);
+    position: sticky;
+    margin-bottom: 5%;
+    height: 50px;
+    vertical-align: middle;
+}
+
+    header #profile-pic {
+        vertical-align: middle;
+        width: 20px;
+        height: 20px;
+    }
+
+    header > ul {
+        /* position: relative; */
+        text-align: center;
+    }
+
+        header > ul > li {
+            height: 15%;
+            display: inline-block;
+        }
+
+            header > ul > li > a {
+                text-decoration: none;
+            }
+
+                header > ul > li > a > span:hover {
+                    background-color: rgb(219, 221, 219);
+                }
+
+            header > ul > li span {
+                color: blue
+            }
+
+main {
+    z-index: 0;
+    /*    box-sizing: border-box 10px 10px;*/
+    background-color: rgb(153, 153, 153);
+    position: relative;
+    height: fit-content;
+    left: 5px;
+    width: 70%;
+}
+
+.all-game-menus {
+    background-color: brown;
+}
+
+    .all-game-menus .game-menu {
+        border: 15%;
+        border-style: dashed;
+        overflow: hidden;
+    }
+
+        .all-game-menus .game-menu .menu-image {
+            margin: auto;
+            width: 20%;
+            height: 20%;
+            float: left;
+            margin: auto;
+            padding: 10px;
+        }
+
+        .all-game-menus .game-menu .menu-text {
+            margin: auto;
+            float: left;
+            max-width: 70%;
+        }
+
+footer {
+    margin-top: 50%;
+    background-color: brown;
+}

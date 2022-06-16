@@ -25,7 +25,7 @@ namespace StinkyGamesDotNone.Pages
         {
 			_webHostEnvironment = webHost;
         }
-
+		
 		public void OnGet()
 		{
 			var provider = new PhysicalFileProvider(_webHostEnvironment.WebRootPath);

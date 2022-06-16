@@ -24,9 +24,9 @@ namespace StinkyGamesDotNone
             _configuration = configuration;
             _env = env;
 
-            ConfigureDatabaseConn();
-            _mySqlConnection.Open();
-            Console.WriteLine(_mySqlConnection.State);
+            //ConfigureDatabaseConn();
+            //_mySqlConnection.Open();
+            //Console.WriteLine(_mySqlConnection.State);
         }
         // for practicing purposes only, database connection should be established in individual
         // classes 

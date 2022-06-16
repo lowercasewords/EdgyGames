@@ -1,2 +1,2 @@
 # EdgyGames
-A website prototype with games to (hopefully) play. Was created for practice
+A website prototype with games to play. It was created for my own practice purposes

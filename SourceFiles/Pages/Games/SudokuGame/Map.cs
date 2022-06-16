@@ -13,17 +13,8 @@ namespace StinkyGamesDotNone
     {
         public Grid[,] Grids { get; private set; }
 
-        
-        public static int _singleTonCount = 0;
-
         public Map()
         {
-            ///<summary>
-            /// Implementing SingleTon
-            ///</summary>
-            if (++_singleTonCount > 1)
-                throw new Exception("You can't have more " +
-                                    "than one instance of Map Class");
             int gridAmount = 9;
 
             if ((int)Math.Sqrt(gridAmount) != Math.Sqrt(gridAmount))
@@ -36,26 +27,6 @@ namespace StinkyGamesDotNone
         {
             Grids = Grid.CreateGrids();
         }
-        //public void PrintMap()
-        //{
-        //    for (int gridRow = 0; gridRow < Grid._gridsAcross; gridRow++)
-        //    {
-        //        for (int tileRow = 0; tileRow < Grid._tilesAcross; tileRow++) // tile row
-        //        {
-        //            for (int gridCol = 0; gridCol < Grid._gridsAcross; gridCol++)
-        //            {
-        //                for (int tileCol = 0; tileCol < Grid._tilesAcross; tileCol++)
-        //                {
-        //                    int? tile = Grids[gridRow, gridCol].Tiles[tileRow, tileCol];
-        //                    Console.Write(tile is null ? "-" : tile.ToString());
-        //                    Console.Write(tileCol + 1 == Grid._tilesAcross ? "|" : "");
-        //                }
-        //                Console.Write(gridCol + 1 == Grid._gridsAcross ? "\n" : "");
-        //            }
-        //        }
-        //        Console.WriteLine("------------");
-        //    }
-        //}
         public class Grid
         {
             private static Random random = new Random();
@@ -68,10 +39,6 @@ namespace StinkyGamesDotNone
             internal static readonly int _tilesAcross = (int)Math.Sqrt(_tileAmount);
 
             private int?[,] _tiles;
-            //public int?[,] Tiles
-            //{
-            //    get { return _tiles; }
-            //}
 
             public object GetTile(int row, int col)
             {

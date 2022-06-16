@@ -1,12 +1,9 @@
-﻿@using System.IO;
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <title>@ViewData["Title"]</title>
-    <link src="wwwroot/css/index.css" rel="stylesheet" />
-    @{
-        Console.WriteLine(new FileInfo("wwwroot/css/index.css").Exists);
-    }
+    <link href="/css/index.css" asp-append-version="true" rel="stylesheet" />
+    <link href="http://fonts.cdnfonts.com/css/common-pixel" rel="stylesheet">
 </head>
 <body>
     <header>
@@ -23,10 +20,6 @@
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <img id="profile-pic" src="#">
-                    <span>Profile</span>
-                </a>
             </li>
         </ul>
     </header>

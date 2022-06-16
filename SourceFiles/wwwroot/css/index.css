@@ -1,4 +1,6 @@
-﻿body {
+﻿@import url('http://fonts.cdnfonts.com/css/common-pixel');
+body {
+    font-family: 'Common Pixel', sans-serif;
     background-color: grey;
 }
 
@@ -12,14 +14,7 @@ header {
     vertical-align: middle;
 }
 
-    header #profile-pic {
-        vertical-align: middle;
-        width: 20px;
-        height: 20px;
-    }
-
     header > ul {
-        /* position: relative; */
         text-align: center;
     }
 
@@ -55,24 +50,22 @@ main {
 }
 
     .all-game-menus .game-menu {
-        border: 15%;
         border-style: dashed;
         overflow: hidden;
+        height: 100px;
     }
 
         .all-game-menus .game-menu .menu-image {
             margin: auto;
-            width: 20%;
-            height: 20%;
-            float: left;
-            margin: auto;
-            padding: 10px;
+            width: 10%;
+            display: inline-block;
+            padding: 2%;
         }
 
         .all-game-menus .game-menu .menu-text {
-            margin: auto;
-            float: left;
-            max-width: 70%;
+            display: inline-block;
+            width: 80%;
+            height: 10%;
         }
 
 footer {

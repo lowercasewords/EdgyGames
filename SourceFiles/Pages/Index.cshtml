@@ -1,76 +1,41 @@
 ﻿@page
 @model StinkyGamesDotNone.Pages.IndexModel
 @{
-    ViewData["Title"] = "Index Page Bruh";
-    
-    Console.WriteLine(@Url.RouteUrl(Model.GameMenuImages[0]));
-
-    Console.WriteLine("Do something");
-
-    Console.WriteLine("Nothing");
+    ViewData["Title"] = "[Edgy Games]";
 }
-@*<div id="game-menus">
-    <div id="sudoku-menu">
-        <a asp-page="Games/SudokuGame/Sudoku">
-            <span>@ViewData["Title"]</span>
-            <img src="Images/sudoku-menu.jpeg"/>
-            <span>
-                This is the short description of my Sudoku Game I've made.
-                Actually, it's not much about the game,
-                it's just a test of synchronization between this text file and the html page.
-            </span>
-        </a>
-    </div>
-    <div id="mine-sweeper-menu">
-        <a asp-page="Games/MineSweeperGame/MineSweeper">
-            <img src="Images/mine-sweeper-menu.jpeg" alt="No Image" />
-            <span>
-                This is the description for Mine Sweeper
-            </span>
-        </a>
-    </div>
-    <div id="worlad-menu">
-        <a asp-page="Games/WorladGame/Worlad">
-            <img src="#" />
-            <span>
-                Practice words in a playable manner! Not a Quizlet rippoff I swear!
-            </span>
-        </a>
-    </div>
-</div>*@
 <div class="all-game-menus">
     <div class="game-menu">
         <a asp-page="Games/SudokuGame/Sudoku">
-            <img class="menu-image" src="wwwroot/Images/sudoku-menu.jpeg" />
+            <img class="menu-image" src="Images/sudoku-menu.jpeg" alt="No Image"/>
             <div class="menu-text">
-                <h1>Sudoku</h1>
-                <h3>
+                <h2>Sudoku</h2>
+                <h5>
                     This is the short description of my Sudoku Game I've made.
                     Actually, it's not much about the game,
                     it's just a test of synchronization between this text file and the html page.
-                </h3>
+                </h5>
             </div>
         </a>
     </div>
     <div class="game-menu">
         <a asp-page="Games/MineSweeperGame/MineSweeper">
-            <img class="menu-image" src="wwwroot/Images/mine-sweeper-menu.jpeg" alt="No Image" />
+            <img class="menu-image" src="Images/mine-sweeper-menu.jpeg" alt="No Image" />
             <div class="menu-text">
-                <h1>Mine Sweeper</h1>
-                <h3>
+                <h2>Mine Sweeper</h2>
+                <h5>
                     This is the description for Mine Sweeper
-                </h3>
+                </h5>
             </div>
         </a>
     </div>
     <div class="game-menu">
         <a asp-page="Games/WorladGame/Worlad">
-            <img class="menu-image" src="#" />
+            <img class="menu-image" src="#" alt="No Image"/>
             <div class="menu-text">
-                <h1>Worlad</h1>
-                <h3>
+                <h2>Worlad</h2>
+                <h5>
                     Practice words in a playable manner! Not a Quizlet rippoff, I swear!
-                </h3>
+                </h5>
             </div>
         </a>
     </div>

@@ -1,0 +1,74 @@
+﻿@import url('http://fonts.cdnfonts.com/css/common-pixel');
+body {
+    font-family: 'Common Pixel', sans-serif;
+    background-color: grey;
+}
+
+header {
+    z-index: 1;
+    top: 5px;
+    background-color: rgb(158, 158, 158);
+    position: sticky;
+    margin-bottom: 5%;
+    height: 50px;
+    vertical-align: middle;
+}
+
+    header > ul {
+        text-align: center;
+    }
+
+        header > ul > li {
+            height: 15%;
+            display: inline-block;
+        }
+
+            header > ul > li > a {
+                text-decoration: none;
+            }
+
+                header > ul > li > a > span:hover {
+                    background-color: rgb(219, 221, 219);
+                }
+
+            header > ul > li span {
+                color: blue
+            }
+
+main {
+    z-index: 0;
+    /*    box-sizing: border-box 10px 10px;*/
+    background-color: rgb(153, 153, 153);
+    position: relative;
+    height: fit-content;
+    left: 5px;
+    width: 70%;
+}
+
+.all-game-menus {
+    background-color: brown;
+}
+
+    .all-game-menus .game-menu {
+        border-style: dashed;
+        overflow: hidden;
+        height: 100px;
+    }
+
+        .all-game-menus .game-menu .menu-image {
+            margin: auto;
+            width: 10%;
+            display: inline-block;
+            padding: 2%;
+        }
+
+        .all-game-menus .game-menu .menu-text {
+            display: inline-block;
+            width: 80%;
+            height: 10%;
+        }
+
+footer {
+    margin-top: 50%;
+    background-color: brown;
+}

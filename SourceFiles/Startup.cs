@@ -28,9 +28,8 @@ namespace StinkyGamesDotNone
             _mySqlConnection.Open();
             Console.WriteLine(_mySqlConnection.State);
         }
-
-        //private bool DatabaseConnCheck() => ;
-
+        // for practicing purposes only, database connection should be established in individual
+        // classes 
         private void ConfigureDatabaseConn()
         {
             string connString = _configuration.GetConnectionString("Default");

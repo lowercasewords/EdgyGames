@@ -1,0 +1,42 @@
+﻿@page
+@model StinkyGamesDotNone.Pages.IndexModel
+@{
+    ViewData["Title"] = "[Edgy Games]";
+}
+<div class="all-game-menus">
+    <div class="game-menu">
+        <a asp-page="Games/SudokuGame/Sudoku">
+            <img class="menu-image" src="Images/sudoku-menu.jpeg" alt="No Image"/>
+            <div class="menu-text">
+                <h2>Sudoku</h2>
+                <h5>
+                    This is the short description of my Sudoku Game I've made.
+                    Actually, it's not much about the game,
+                    it's just a test of synchronization between this text file and the html page.
+                </h5>
+            </div>
+        </a>
+    </div>
+    <div class="game-menu">
+        <a asp-page="Games/MineSweeperGame/MineSweeper">
+            <img class="menu-image" src="Images/mine-sweeper-menu.jpeg" alt="No Image" />
+            <div class="menu-text">
+                <h2>Mine Sweeper</h2>
+                <h5>
+                    This is the description for Mine Sweeper
+                </h5>
+            </div>
+        </a>
+    </div>
+    <div class="game-menu">
+        <a asp-page="Games/WorladGame/Worlad">
+            <img class="menu-image" src="#" alt="No Image"/>
+            <div class="menu-text">
+                <h2>Worlad</h2>
+                <h5>
+                    Practice words in a playable manner! Not a Quizlet rippoff, I swear!
+                </h5>
+            </div>
+        </a>
+    </div>
+</div>

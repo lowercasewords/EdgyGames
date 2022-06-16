@@ -1,11 +1,13 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <link href="css/index.css" rel="stylesheet"/>
+    <title>@ViewData["Title"]</title>
+    <link href="/css/index.css" asp-append-version="true" rel="stylesheet" />
+    <link href="http://fonts.cdnfonts.com/css/common-pixel" rel="stylesheet">
 </head>
-<body onload="addGames()">
+<body>
     <header>
-        <ul>
+        <ul id="header-list">
             <li>
                 <span>Test Web Header</span>
             </li>
@@ -18,9 +20,6 @@
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <img id="header-profile-pic" src="/Users/arturagalarian/Desktop/Images/pexels-photo-1061640.jpeg" alt="Profile">
-                </a>
             </li>
         </ul>
     </header>
@@ -28,8 +27,8 @@
         @RenderBody()
     </main>
     <footer>
-        <span>footer</span>
-        <img alt="no image" src="Images/mine-sweeper-menu.jpeg" width="50" height="50" />
+        <span>Footer</span>
+        <img alt="no image" src="#" width="50" height="50" />
     </footer>
 </body>
 </html>

@@ -1,15 +1,13 @@
 ﻿@page
 @model EdgyGames.Pages.Games.SudokuModel
-@section Styles{
+@section Imports {
     <link href="~/css/sudoku.css" rel="stylesheet" />
+    <script src="~/js/sudoku.js"></script>
 }
 @{
     ViewData["Title"] = "-Sudoku-";
     Layout = "_GamePageLayout";
 }
-<div id="map">
-    <button type="submit" formmethod="post" asp-page-handler="Restart"></button>
-    <div id="container" class="grid-container">
 
-    </div>
+<div id="sudoku-map">
 </div>

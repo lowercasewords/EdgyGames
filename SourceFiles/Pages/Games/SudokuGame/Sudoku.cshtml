@@ -1,19 +1,15 @@
 ﻿@page
-@model StinkyGamesDotNone.Pages.Games.SudokuModel
+@model EdgyGames.Pages.Games.SudokuModel
+@section Styles{
+    <link href="~/css/sudoku.css" rel="stylesheet" />
+}
 @{
     ViewData["Title"] = "-Sudoku-";
     Layout = "_GamePageLayout";
 }
-<script>
-    
-    let map = @Model._map;
-    function populate()
-        for (let tile = 0; i < map.Grids.tile.length; i++) {
-            document.createElement(
-                $"<div clas=\"grid - item\">{}</div>");
-        }
-    }
-</script>
-<button type="submit" formmethod="post" asp-page-handler="Restart"></button>
-<div id="container" class="grid-container">
+<div id="map">
+    <button type="submit" formmethod="post" asp-page-handler="Restart"></button>
+    <div id="container" class="grid-container">
+
+    </div>
 </div>

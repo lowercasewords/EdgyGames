@@ -1,3 +1,14 @@
 ﻿#map {
-    background-color: green;
+    background-color: yellow;
+}
+#sudoku-start-conf {
+    position: relative;
+    margin: auto;
+    width: fit-content;
+    top: 95%;
+    background-color: black;
+}
+
+#sudoku-start-conf #sudoku-start-button {
+    background-color: yellow;
 }

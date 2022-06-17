@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace StinkyGamesDotNone.Pages.Games.MineSweeper
+namespace EdgyGames.Pages.Games.MineSweeper
 {
     public class IndexModel : PageModel
     {

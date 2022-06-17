@@ -35,5 +35,10 @@ header {
             }
 
 main {
-
+    background-color: gray;
+    border-style: dashed;
+    border-color: black;
+    margin: auto;
+    width: 90vh;
+    height: 80vh;
 }

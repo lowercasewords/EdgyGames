@@ -1,5 +1,5 @@
 ﻿using System;
-namespace StinkyGamesDotNone.Pages.Games.MineSweeperGame
+namespace EdgyGames.Pages.Games.MineSweeperGame
 {
     public class Tile
     {

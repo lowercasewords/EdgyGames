@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-namespace StinkyGamesDotNone
+namespace EdgyGames
 {
     /// <summary>
     /// Represents a Sudoku game map with nested grid class

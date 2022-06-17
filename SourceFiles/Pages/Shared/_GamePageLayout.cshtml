@@ -1,16 +1,28 @@
 ﻿<!DOCTYPE html>
-
 <html>
 <head>
-    <title>@ViewBag.Title</title>
-    <link href="css/gamePage" rel="stylesheet" />
+    <title>@ViewData["Title"]</title>
+    <link href="~/css/gamePage.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <header>
-
+        <ul id="header-list">
+            <li>
+                <span>Test Web Header</span>
+            </li>
+            <li>
+                <span>another message</span>
+            </li>
+            <li>
+                <a href="#">
+                    <span>test text</span>
+                </a>
+            </li>
+        </ul>
     </header>
     <main id="game-box">
         @RenderBody()
+        @RenderSection("Styles")
     </main>
 </body>
 </html>

@@ -4,10 +4,10 @@
     document.getElementById('game-box').replaceChild('sudoku-map');
 }
 
+Map.prototype.gridRowSize = 3;
+Map.prototype.gridColSize = 3;
 /** A collection of 2D grids, row and col start at 0 */
 function Map() {
-    let gridRowSize = 3;
-    let gridColSize = 3;
     this.grids = defArr(gridRowSize, gridColSize);
     var mapElement = document.createElement("div");
     mapElement.setAttribute("id", "sudoku-map");
@@ -15,7 +15,7 @@ function Map() {
     /** Populates the Map with Grids */
     for (let row = 0; row < gridRowSize; row++) {
         for (let col = 0; col < gridColSize; col++) {
-            grids[row, col] = new Grid();
+            this.grids[row, col] = new Grid();
         }
     }
     /** All way check for unique tile 
@@ -54,11 +54,12 @@ function Map() {
             grids[row, col] = char;
         }
     }
-}   
+}
+
+Grid.prototype['tileRowSize'] = 3;
+Grid.prototype['tileColSize'] = 3;
 /** A collection of 2D tiles, row and col start at 0 */
 function Grid() {
-    Map.prototype['tileRowSize'] = 3;
-    Map.prototype['tileColSize'] = 3;
     this.tiles = defArr(tileRowSize, tileColSize);
     /** Returns random integer from 0 to n (excluded) */
     let randInt = function (n) { return Math.floor(Math.random() * n) };
@@ -84,7 +85,7 @@ function Grid() {
 function Tile() { 
     this.number;
 
-    var tileElement = document.createElement('input');
+    this.tileElement = document.createElement('input');
     tileElement.setAttribute('type', 'text');
     tileElement.setAttribute('onkeydown', 'limit(this)');
     tileElement.setAttribute('onkeyup', 'limit(this)');
@@ -92,7 +93,7 @@ function Tile() {
 
     /** Overrided to return a number the tile represets as a String */
     function toString() {
-        return number;
+        return this.number;
     }
 
     /**

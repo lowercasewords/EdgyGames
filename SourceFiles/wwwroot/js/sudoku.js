@@ -11,6 +11,7 @@ function startGame() {
     }
 }
 
+<<<<<<< HEAD
 Map.prototype.this.gridRowSize = 3;
 Map.prototype.this.gridColSize = 3;
 
@@ -24,6 +25,19 @@ function Map() {
     /** Populates the Map with Grids */
     for (let row = 0; row < this.gridRowSize; row++) {
         for (let col = 0; col < this.gridColSize; col++) {
+=======
+Map.prototype.gridRowSize = 3;
+Map.prototype.gridColSize = 3;
+/** A collection of 2D grids, row and col start at 0 */
+function Map() {
+    this.grids = defArr(gridRowSize, gridColSize);
+    var mapElement = document.createElement("div");
+    mapElement.setAttribute("id", "sudoku-map");
+
+    /** Populates the Map with Grids */
+    for (let row = 0; row < gridRowSize; row++) {
+        for (let col = 0; col < gridColSize; col++) {
+>>>>>>> 2f6b2d33ce1dbf43c4ec4c841b318f6bd4aaebb6
             this.grids[row, col] = new Grid();
         }
     }
@@ -65,11 +79,19 @@ function Map() {
     }
 }
 
+<<<<<<< HEAD
 Grid.prototype['this.tileRowSize'] = 3;
 Grid.prototype['this.tileColSize'] = 3;
 /** A collection of 2D tiles, row and col start at 0 */
 function Grid() {
     this.tiles = defArr(this.tileRowSize, this.tileColSize);
+=======
+Grid.prototype['tileRowSize'] = 3;
+Grid.prototype['tileColSize'] = 3;
+/** A collection of 2D tiles, row and col start at 0 */
+function Grid() {
+    this.tiles = defArr(tileRowSize, tileColSize);
+>>>>>>> 2f6b2d33ce1dbf43c4ec4c841b318f6bd4aaebb6
     /** Returns random integer from 0 to n (excluded) */
     let randInt = function (n) { return Math.floor(Math.random() * n) };
 

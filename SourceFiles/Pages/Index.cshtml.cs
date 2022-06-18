@@ -11,7 +11,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Hosting;
 using MySqlConnector;
 
-namespace EdgyGames.Pages
+namespace StinkyGamesDotNone.Pages
 {
 	//[Produces("application/json")]
 	public class IndexModel : PageModel

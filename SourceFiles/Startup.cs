@@ -11,7 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation;
 using MySqlConnector;
 
-namespace EdgyGames
+namespace StinkyGamesDotNone
 {
     public class Startup
     {

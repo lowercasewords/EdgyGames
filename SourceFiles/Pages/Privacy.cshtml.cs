@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
-namespace EdgyGames.Pages
+namespace StinkyGamesDotNone.Pages
 {
     public class PrivacyModel : PageModel
     {

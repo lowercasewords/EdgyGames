@@ -1,9 +1,31 @@
-﻿function startGame() {
+﻿var gameBox = document.getElementById('game-box');
+
+function startGame() {
     console.log("game has started");
     let map = new Map();
-    document.getElementById('game-box').replaceChild('sudoku-map');
+
+    if (document.getElementById(map.getAttribute('id')) == undefined) {
+        gameBox.appendChild(document.getElementById(map.getAttribute('id')), map.mapElement);
+    } else {
+        gameBox.replaceChild(map.getAttribute('id'), )
+    }
 }
 
+<<<<<<< HEAD
+Map.prototype.this.gridRowSize = 3;
+Map.prototype.this.gridColSize = 3;
+
+/** A collection of 2D grids, row and col start at 0 */
+function Map() {
+    console.log(this.gridRowSize);
+    this.grids = defArr(this.gridRowSize, this.gridColSize);
+    this.mapElement = document.createElement("div");
+    this.mapElement.setAttribute("id", "sudoku-map");
+
+    /** Populates the Map with Grids */
+    for (let row = 0; row < this.gridRowSize; row++) {
+        for (let col = 0; col < this.gridColSize; col++) {
+=======
 Map.prototype.gridRowSize = 3;
 Map.prototype.gridColSize = 3;
 /** A collection of 2D grids, row and col start at 0 */
@@ -15,6 +37,7 @@ function Map() {
     /** Populates the Map with Grids */
     for (let row = 0; row < gridRowSize; row++) {
         for (let col = 0; col < gridColSize; col++) {
+>>>>>>> 2f6b2d33ce1dbf43c4ec4c841b318f6bd4aaebb6
             this.grids[row, col] = new Grid();
         }
     }
@@ -27,15 +50,15 @@ function Map() {
         /** Should check right side? */
         let right = true;
         // Horizontal all-way check
-        for (let i = row; right ? i < gridRowSize : i >= gridRowSize; right ? i++ : i--) {
-            if(typeof grids[i][col] === undefined) {
+        for (let i = row; right ? i < this.gridRowSize : i >= this.gridRowSize; right ? i++ : i--) {
+            if (typeof grids[i][col] === undefined) {
                 right = !right;
                 i = row;
             }
         }
         // Vertical all-way check
-        for(let i = col; rght ? i < gridColSize : i >= gridColSize; col ? i++ : i--) {
-            if(typeof grids[row][col] === undefined) {
+        for (let i = col; rght ? i < this.gridColSize : i >= this.gridColSize; col ? i++ : i--) {
+            if (typeof grids[row][col] === undefined) {
                 right = !right;
                 i = row;
             }
@@ -56,11 +79,19 @@ function Map() {
     }
 }
 
+<<<<<<< HEAD
+Grid.prototype['this.tileRowSize'] = 3;
+Grid.prototype['this.tileColSize'] = 3;
+/** A collection of 2D tiles, row and col start at 0 */
+function Grid() {
+    this.tiles = defArr(this.tileRowSize, this.tileColSize);
+=======
 Grid.prototype['tileRowSize'] = 3;
 Grid.prototype['tileColSize'] = 3;
 /** A collection of 2D tiles, row and col start at 0 */
 function Grid() {
     this.tiles = defArr(tileRowSize, tileColSize);
+>>>>>>> 2f6b2d33ce1dbf43c4ec4c841b318f6bd4aaebb6
     /** Returns random integer from 0 to n (excluded) */
     let randInt = function (n) { return Math.floor(Math.random() * n) };
 
@@ -68,7 +99,7 @@ function Grid() {
 
     /** Randomly populates the grid with tiles */
     for (let i = 0; i < randInt(n); i++) {
-        addUniqueTile(tiles[randint(tileRowSize)][randInt(tile)], randInt(9));
+        addUniqueTile(tiles[randint(this.tileRowSize)][randInt(tile)], randInt(9));
     }
     /**
      * Tries to place a char in the tile in the grid.
@@ -82,7 +113,7 @@ function Grid() {
     }
 }
 /** Creates */
-function Tile() { 
+function Tile() {
     this.number;
 
     this.tileElement = document.createElement('input');

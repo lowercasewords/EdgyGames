@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using MySqlConnector;
 
-namespace EdgyGames
+namespace StinkyGamesDotNone
 {
     public class Program
     {
@@ -36,7 +36,6 @@ namespace EdgyGames
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseStaticWebAssets();
                 });
     }
 }

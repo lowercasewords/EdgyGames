@@ -6,6 +6,7 @@
     <UserSecretsId>6688202d-8869-45d9-bcd9-f1775fba099d</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'EdgyGames' " />
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.5" />
     <PackageReference Include="MySqlConnector" Version="2.1.10" />
@@ -41,6 +42,5 @@
     <Content Remove="wwwroot\Information\details.txt" />
     <Content Remove="wwwroot\Information\" />
     <Content Remove="wwwroot\Images\sudoku-game-cover.jpeg" />
-    <Content Remove="wwwroot\css\gamePage.css" />
   </ItemGroup>
 </Project>

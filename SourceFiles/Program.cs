@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using MySqlConnector;
 
-namespace StinkyGamesDotNone
+namespace EdgyGames
 {
     public class Program
     {

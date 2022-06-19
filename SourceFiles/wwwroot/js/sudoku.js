@@ -3,16 +3,16 @@
 function startGame() {
     console.log("game has started");
     let map = new Map();
-
-    if (document.getElementById(map.getAttribute('id')) == undefined) {
-        gameBox.appendChild(document.getElementById(map.getAttribute('id')), map.mapElement);
+    let previousMapId = document.getElementById(map.mapElement.getAttribute('id'));
+    if (previousMapId == undefined) {
+        gameBox.appendChild(previousMapId);
     } else {
-        gameBox.replaceChild(map.getAttribute('id'), )
+        gameBox.replaceChild(previousMapId, map.mapElement);
     }
 }
 
-Map.prototype.this.gridRowSize = 3;
-Map.prototype.this.gridColSize = 3;
+Map.prototype.gridRowSize = 3;
+Map.prototype.gridColSize = 3;
 
 /** A collection of 2D grids, row and col start at 0 */
 function Map() {

@@ -36,6 +36,7 @@ namespace EdgyGames
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStaticWebAssets();
                 });
     }
 }

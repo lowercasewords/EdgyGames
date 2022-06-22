@@ -163,12 +163,16 @@ function Tile(linkedGrid) {
 
     // Partial configuration of this obj's HTMLElements
     // ------------------------------------------------------ \\ 
-    this.tileEl = document.createElement('input');
+    this.tileEl = document.createElement('div');
     this.tileEl.setAttribute('class', 'sudoku-tile');
-    this.tileEl.setAttribute('type', 'button');
-    this.tileEl.setAttribute('onkeydown', 'limit(this)');
-    this.tileEl.setAttribute('onkeyup', 'limit(this)');
     this.grid.gridEl.appendChild(this.tileEl);
+
+    this.tileInputEl = document.createElement('input');
+    this.tileInputEl.setAttribute('class', 'sudoku-tile-input');
+    this.tileInputEl.setAttribute('type', 'button');
+    this.tileInputEl.setAttribute('onkeydown', 'limit(this)');
+    this.tileInputEl.setAttribute('onkeyup', 'limit(this)');
+    this.tileEl.appendChild(this.tileInputEl);
     // ------------------------------------------------------ //
 
     /** Overrided to return a value the tile represets as a String */

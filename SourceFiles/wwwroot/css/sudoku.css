@@ -11,34 +11,19 @@
     height: 100%;
 }
 
-.sudoku-game-table {
-    height: 100%;
-    width: 100%;
-    display: inline-block;
-    border-collapse: separate;
-    border-spacing: 5px;
-}
-.sudoku-grid-row {
-    width: 100%;
-    display: inline-block;
-    height: 33%;
-}
-
 .sudoku-grid {
     height: 180px;
     width: 180px;
 }
 
-.sudoku-grid-table {
-
-} 
-
-.sudoku-tile-table {
-    
-}
-
 .sudoku-tile {
 
+}
+
+.sudoku-tile > .sudoku-tile-input {
+    width: 33px;
+    height: 0;
+    padding-bottom: 33px;
 }
 
 #sudoku-conf {

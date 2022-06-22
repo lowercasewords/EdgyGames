@@ -1,32 +1,45 @@
-﻿var gameBox = document.getElementById('game-box');
+﻿var gameField = document.getElementById('sudoku-game-field');
 
 function startGame() {
-    console.log("game has started");
     let map = new Map();
-    let previousMapId = document.getElementById(map.mapElement.getAttribute('id'));
-    if (previousMapId == undefined) {
-        gameBox.appendChild(previousMapId);
-    } else {
-        gameBox.replaceChild(previousMapId, map.mapElement);
-    }
+
 }
 
-Map.prototype.gridRowSize = 3;
-Map.prototype.gridColSize = 3;
-
-/** A collection of 2D grids, row and col start at 0 */
-function Map() {
-    console.log(this.gridRowSize);
-    this.grids = defArr(this.gridRowSize, this.gridColSize);
-    this.mapElement = document.createElement("div");
-    this.mapElement.setAttribute("id", "sudoku-map");
-
-    /** Populates the Map with Grids */
-    for (let row = 0; row < this.gridRowSize; row++) {
-        for (let col = 0; col < this.gridColSize; col++) {
-            this.grids[row, col] = new Grid();
+/**
+ * Creates a Map obj for a SINGLE game of sudoku
+ * @param {any} gridSize size of each grid (if value == 3, then grids == 3x3 in one map)
+ * @param {any} tileSize size of each tile (if value == 3, then tiles == 3x3 in one grid)
+ */
+function Map(gridSize = 3, tileSize = 3) {
+    /** 2d array of map grids */
+    this.grids = [[], []];
+    // Partial configuration of this obj's HTMLElements
+    // ---------------------------------------- \\
+    this.mapEl = document.createElement('div');
+    this.mapEl.setAttribute('class', 'sudoku-map');
+    gameField.appendChild(this.mapEl);
+    
+    let tblEl = document.createElement('tbl');
+    tblEl.setAttribute('class', 'sudoku-game-table');
+    this.mapEl.appendChild(tblEl);
+    // ---------------------------------------- \\
+    
+    // Populates the Map with Grids 
+    for (let row = 0; row < gridSize; row++) {
+        let tblRowEl = document.createElement('tr');
+        tblRowEl.setAttribute('class', 'sudoku-grid-row');
+        for (let col = 0; col < gridSize; col++) {
+            console.log('\nadding #' + (row + col + 1) + ' grid');
+            let grid = new Grid(this, tileSize);
+            this.grids.push(grid);
+            
+            let tblDataEl = document.createElement('td');
+            tblDataEl.appendChild(grid.gridEl);
+            tblRowEl.appendChild(tblDataEl);
         }
+        tblEl.appendChild(tblRowEl);
     }
+
     /** All way check for unique tile 
      * @param {any} row in what grid row char wanted to be put
      * @param {any} col in what grid col char wanted to be put
@@ -36,21 +49,25 @@ function Map() {
         /** Should check right side? */
         let right = true;
         // Horizontal all-way check
-        for (let i = row; right ? i < this.gridRowSize : i >= this.gridRowSize; right ? i++ : i--) {
-            if (typeof grids[i][col] === undefined) {
+        for (let i = row; right ? i < this.gridSize : i >= gridSize; right ? i++ : i--) {
+            if (typeof this.grids[i][col] === undefined) {
                 right = !right;
                 i = row;
+
+                // IMPLEMENTATION PIECE MISSING FOR CHARACTER VALUE CHECK!!!!
             }
         }
+        
         // Vertical all-way check
-        for (let i = col; rght ? i < this.gridColSize : i >= this.gridColSize; col ? i++ : i--) {
-            if (typeof grids[row][col] === undefined) {
+        for (let i = col; right ? i < this.gridSize : i >= this.gridSize; col ? i++ : i--) {
+            if (typeof this.grids[row][col] === undefined) {
                 right = !right;
                 i = row;
+
+                // IMPLEMENTATION PIECE MISSING FOR CHARACTER VALUE CHECK!!!!
             }
         }
     }
-
     /**
      * Validates if char could be put on the grid
      * @param {any} row row of the grid
@@ -60,51 +77,104 @@ function Map() {
     function setTile(row, col, char) {
         let checkResult = checkTile(row, col, char);
         if (checkResult) {
-            grids[row, col] = char;
+            // Should be using a check
+            this.grids[row, col] = char;
         }
     }
 }
+/**
+ * Creates a grid object connected to a map
+ * @param {any} linkedMap A map obj to link to
+ * @param {any} tileSize A size of the current grid 
+ * (for example if tiles == 3 => grid is 3x3)
+ * */
+function Grid(linkedMap, tileSize) {
+    /** A map obj to which current grid obj is linked to */
+    this.map = linkedMap;
+    /** Tiles the current grid obj consists of */
+    this.tiles = [[], []];
 
-Grid.prototype['this.tileRowSize'] = 3;
-Grid.prototype['this.tileColSize'] = 3;
-/** A collection of 2D tiles, row and col start at 0 */
-function Grid() {
-    this.tiles = defArr(this.tileRowSize, this.tileColSize);
-    /** Returns random integer from 0 to n (excluded) */
-    let randInt = function (n) { return Math.floor(Math.random() * n) };
+    // Partial configuration of this obj's HTMLElements
+    // ---------------------------------------- \\
+    this.gridEl = document.createElement('div');
+    this.gridEl.setAttribute('class', 'sudoku-grid');
+    this.map.mapEl.appendChild(this.gridEl);
+    let tileTblEl = document.createElement('tbl');
+    tileTblEl.setAttribute('class', 'sudoku-tile-table');
+    this.gridEl.appendChild(tileTblEl);
+    // ---------------------------------------- //
+    
+    // Populates the current grid obj with tile objs
+    for (let row = 0; row < tileSize; row++) {
 
-    var gridElement = document.createElement("div");
+        let tblRowEl = document.createElement('tr');
+        for(let col = 0; col < tileSize; col++) {
+            console.log('\tadding #' + (row + col + 1) + ' tile');
+            let tile = new Tile(this);
+            this.tiles.push(tile);
 
-    /** Randomly populates the grid with tiles */
-    for (let i = 0; i < randInt(n); i++) {
-        addUniqueTile(tiles[randint(this.tileRowSize)][randInt(tile)], randInt(9));
+            let tblDataEl = document.createElement('td');
+            tblDataEl.appendChild(tile.tileEl);
+            tblRowEl.appendChild(tblDataEl);
+        }
+        tileTblEl.appendChild(tblRowEl);
     }
+
+    
+    /**
+     * Tries to push a unique [value] to [tile] in [arr]
+     * @param {any} arr An array to which [tile] should be pushed
+     * @param {any} tile The number we're pushed
+     * @returns Whether or not a [tile] could be pushed into [arr]
+     */
+    function setDefltTiles(arr, tile) {
+        let shouldPush = !arr.includes(tile) & typeof tile == Tile;
+
+        if (shouldPush) {
+            let int = tile;
+            arr[randInt(this.tileRowSize)][randInt(this.tileColSize)] = int;
+        }
+        return shouldPush;
+    }
+
     /**
      * Tries to place a char in the tile in the grid.
      * Invoked automatically by it's Map object, don't call directly!
-     * @param {any} row
-     * @param {any} col
-     * @param {any} char
+     * @param {any} row Tile row 
+     * @param {any} col Tile col
+     * @param {any} char Character value for the tile
+     * @returns Whether or not the value was set
      */
     function setTile(row, col, char) {
-        tiles[row][col] = char;
+        this.tiles[row][col] = char;
+
+        //!!! MAKE A CHECK FOR INVALID CHARACTER VALUE!!!
     }
 }
-/** Creates */
-function Tile() {
-    this.number;
 
-    this.tileElement = document.createElement('input');
-    tileElement.setAttribute('type', 'text');
-    tileElement.setAttribute('onkeydown', 'limit(this)');
-    tileElement.setAttribute('onkeyup', 'limit(this)');
+/** 
+ * Creates a tile linked to the grid
+ * @param {any} linkedGrid a grid obj to link to
+ * */
+function Tile(linkedGrid) {
+    /** Value of the current tile */
+    this.value;
+    this.grid = linkedGrid;
 
+    // Partial configuration of this obj's HTMLElements
+    // ------------------------------------------------------ \\ 
+    this.tileEl = document.createElement('input');
+    this.tileEl.setAttribute('class', 'sudoku-tile');
+    this.tileEl.setAttribute('type', 'button');
+    this.tileEl.setAttribute('onkeydown', 'limit(this)');
+    this.tileEl.setAttribute('onkeyup', 'limit(this)');
+    this.grid.gridEl.appendChild(this.tileEl);
+    // ------------------------------------------------------ //
 
-    /** Overrided to return a number the tile represets as a String */
+    /** Overrided to return a value the tile represets as a String */
     function toString() {
-        return this.number;
-    }
-
+        return this.value; 
+    }  
     /**
      * Limits the input value length to one & type to number
      * @param {any} el the element of whose input should be limited
@@ -120,20 +190,16 @@ function Tile() {
 }
 
 /**
- * Tries to push a unique [tile] to [arr]
- * @param {any} arr an array to which [tile] should be pushed
- * @param {any} tile the number we're pushed
- * @returns whether or not a [tile] could be pushed into [arr]
+ *  HELPER FUNC: Returns random integer from 0 to n (excluded)
+ *  @param {any} n Max number for the range (excluded)
  */
-function addUniqueTile(arr, tile) {
-    let shouldPush = !arr.includes(tile) & typeof Tile;
-    if (shouldPush) {
-        let int = tile;
-        arr.push(int);
-    }
-    return shouldPush;
-}
+function randInt(n) {
+    return Math.floor(Math.random() * n)
+};
+
+
 /**
+ * HELPER FUNC:
  * Creates 2D-array with specified sizes
  * @param {size of the main array} s1
  * @param {size of sub arrays} s2

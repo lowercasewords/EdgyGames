@@ -42,3 +42,8 @@ main {
     width: 90vh;
     height: 80vh;
 }
+
+#game-box {
+    width: 800px;
+    height: 700px;
+}

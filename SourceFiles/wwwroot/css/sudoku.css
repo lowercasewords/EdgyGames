@@ -3,36 +3,3 @@
     height: 550px;
     margin: 5% auto;
 }
-
-.sudoku-map {
-    background-color: yellowgreen;
-    margin: auto;
-    width: 100%;
-    height: 100%;
-}
-
-.sudoku-grid {
-    height: 180px;
-    width: 180px;
-}
-
-.sudoku-tile {
-
-}
-
-.sudoku-tile > .sudoku-tile-input {
-    width: 33px;
-    height: 0;
-    padding-bottom: 33px;
-}
-
-#sudoku-conf {
-    width: 97%;
-}
-    #sudoku-start-conf {
-        margin: auto;
-        width: fit-content;
-    }
-        #sudoku-start-button {
-            background-color: yellow;
-        }

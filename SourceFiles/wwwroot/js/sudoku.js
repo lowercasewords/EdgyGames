@@ -1,45 +1,116 @@
-﻿var gameField = document.getElementById('sudoku-game-field');
+﻿class Sudoku {
+    canvas = document.getElementById('sudoku-canvas');
+    constructor() {
+        if(Sudoku._instance) {
+            throw new Error(`Singleton error: Cannot create more than one instance of ${this.constructor.name} class`);
+        }
+        Sudoku._instance = this;
 
-function startGame() {
-    let map = new Map();
-
+        this.canvas.width = this.canvas.parentElement.offsetWidth;
+        this.canvas.height = this.canvas.parentElement.offsetHeight;
+    }
+}
+let sudokuGame = new Sudoku();
+// Needed after-instantiation features 
+sudokuGame.map = new Map();
+restartGame = () => {
+    console.log('game was restarted');
+    this.map.shuffleGrids();
 }
 
 /**
  * Creates a Map obj for a SINGLE game of sudoku
- * @param {any} gridSize size of each grid (if value == 3, then grids == 3x3 in one map)
- * @param {any} tileSize size of each tile (if value == 3, then tiles == 3x3 in one grid)
+ * @param {any} gridAmount size of each grid (if value == 3, then grids == 3x3 in one map)
+ * @param {any} tileAmount size of each tile (if value == 3, then tiles == 3x3 in one grid)
  */
-function Map(gridSize = 3, tileSize = 3) {
+function Map(gridAmount = 3, tileAmount = 3) {
     /** 2d array of map grids */
     this.grids = [[], []];
-    // Partial configuration of this obj's HTMLElements
-    // ---------------------------------------- \\
-    this.mapEl = document.createElement('div');
-    this.mapEl.setAttribute('class', 'sudoku-map');
-    gameField.appendChild(this.mapEl);
-    
-    let tblEl = document.createElement('tbl');
-    tblEl.setAttribute('class', 'sudoku-game-table');
-    this.mapEl.appendChild(tblEl);
-    // ---------------------------------------- \\
-    
-    // Populates the Map with Grids 
-    for (let row = 0; row < gridSize; row++) {
-        let tblRowEl = document.createElement('tr');
-        tblRowEl.setAttribute('class', 'sudoku-grid-row');
-        for (let col = 0; col < gridSize; col++) {
-            console.log('\nadding #' + (row + col + 1) + ' grid');
-            let grid = new Grid(this, tileSize);
-            this.grids.push(grid);
-            
-            let tblDataEl = document.createElement('td');
-            tblDataEl.appendChild(grid.gridEl);
-            tblRowEl.appendChild(tblDataEl);
+    for (let row = 0; row < gridAmount; row++) {
+        for (let col = 0; col < gridAmount; col++) {
+            let grid = new Grid(this, tileAmount);
+            this.grids.push(grid);   
         }
-        tblEl.appendChild(tblRowEl);
     }
+    let canvas = sudokuGame.canvas;
+    let tilePaths = [];
+    /** Self-executing function */
+    window.onload = function () {
+        let ctx = canvas.getContext('2d');
+        ctx.lineWidth = 3;
+        let gridSize = canvas.width / gridAmount;
+        let tileSize = gridSize / tileAmount;
 
+        for (let gR = 0; gR < gridAmount; gR++) {
+            for (let gC = 0; gC < gridAmount; gC++) {
+                for (let tR = 0; tR < tileAmount; tR++) {
+                    for (let tC = 0; tC < tileAmount; tC++) {
+
+                        let tilePath = new Path2D();
+                        tilePaths.push(tilePath);
+                        //tilePath.rect(tileSize * ((gR * 3) + tR), tileSize * ((gC * 3) + tC), tileSize, tileSize);
+
+                        // lane to right
+                        ctx.strokeStyle = 'yellow';
+                        let currX = tileSize * ((gC * 3) + tC);
+                        let currY = tileSize * ((gR * 3) + tR);
+
+                        currX = currX + tileSize;
+                        tilePath.moveTo(currX, currY);
+
+                        // lane downwards
+                        currY = currY + tileSize;
+                        tilePath.lineTo(currX, currY);
+
+                        // lane to left
+                        currX = currX - tileSize;
+                        tilePath.lineTo(currX, currY);
+
+                        // lane upwards
+                        currY = currY - tileSize;
+                        tilePath.lineTo(currX, currY);
+
+                        tilePath.closePath();
+                        ctx.strokeStyle = 'red';
+                        ctx.stroke(tilePath);
+                        ctx.fillStyle = 'blue';
+                        ctx.fill(tilePath);
+                        }
+                    }
+                }
+            }
+        }
+        // thanks to: https://stackoverflow.com/a/45993653/16256310
+        canvas.onclick = function (event) {
+            console.log('Registered click');
+            let x = event.clientX - canvas.left,
+                y = event.clientY - canvas.top;
+            
+            for (let i = 0; i < tilePaths.length; i++) {
+                if (ctx.isPointInStroke(tilePaths[i], x, y)) {
+                    console.log(i);
+                    ctx.strokeStyle = 'green';
+                    ctx.stroke(tilePaths[i]);
+                    break;
+                }
+            }
+        }  
+        //canvas.addEventListener('click', (event) => {
+        //    console.log('click was registered');
+        //    if (ctx.isPointInPath(tilePath, event.offsetX, event.offsetY)) {
+        //        ctx.fillStyle = 'green';
+
+        //    }
+        //    console.log(`${gR}, ${gC}`);
+        //    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        //    ctx.fill(tilePath);
+        //});
+
+    }
+    /** Shuffle each tile in each grid */
+    this.shuffleGrids = () => this.grids.forEach(_ => _.forEach(grid => {
+        grid.shuffleGrids();
+    }));
     /** All way check for unique tile 
      * @param {any} row in what grid row char wanted to be put
      * @param {any} col in what grid col char wanted to be put
@@ -49,7 +120,7 @@ function Map(gridSize = 3, tileSize = 3) {
         /** Should check right side? */
         let right = true;
         // Horizontal all-way check
-        for (let i = row; right ? i < this.gridSize : i >= gridSize; right ? i++ : i--) {
+        for (let i = row; right ? i < this.gridAmount : i >= gridAmount; right ? i++ : i--) {
             if (typeof this.grids[i][col] === undefined) {
                 right = !right;
                 i = row;
@@ -59,7 +130,7 @@ function Map(gridSize = 3, tileSize = 3) {
         }
         
         // Vertical all-way check
-        for (let i = col; right ? i < this.gridSize : i >= this.gridSize; col ? i++ : i--) {
+        for (let i = col; right ? i < this.gridAmount : i >= this.gridAmount; col ? i++ : i--) {
             if (typeof this.grids[row][col] === undefined) {
                 right = !right;
                 i = row;
@@ -81,43 +152,24 @@ function Map(gridSize = 3, tileSize = 3) {
             this.grids[row, col] = char;
         }
     }
-}
 /**
  * Creates a grid object connected to a map
  * @param {any} linkedMap A map obj to link to
- * @param {any} tileSize A size of the current grid 
+ * @param {any} tileAmount A size of the current grid 
  * (for example if tiles == 3 => grid is 3x3)
  * */
-function Grid(linkedMap, tileSize) {
+function Grid(linkedMap, tileAmount) {
     /** A map obj to which current grid obj is linked to */
     this.map = linkedMap;
     /** Tiles the current grid obj consists of */
     this.tiles = [[], []];
 
-    // Partial configuration of this obj's HTMLElements
-    // ---------------------------------------- \\
-    this.gridEl = document.createElement('div');
-    this.gridEl.setAttribute('class', 'sudoku-grid');
-    this.map.mapEl.appendChild(this.gridEl);
-    let tileTblEl = document.createElement('tbl');
-    tileTblEl.setAttribute('class', 'sudoku-tile-table');
-    this.gridEl.appendChild(tileTblEl);
-    // ---------------------------------------- //
-    
     // Populates the current grid obj with tile objs
-    for (let row = 0; row < tileSize; row++) {
-
-        let tblRowEl = document.createElement('tr');
-        for(let col = 0; col < tileSize; col++) {
-            console.log('\tadding #' + (row + col + 1) + ' tile');
+    for (let row = 0; row < tileAmount; row++) {
+        for(let col = 0; col < tileAmount; col++) {
             let tile = new Tile(this);
             this.tiles.push(tile);
-
-            let tblDataEl = document.createElement('td');
-            tblDataEl.appendChild(tile.tileEl);
-            tblRowEl.appendChild(tblDataEl);
         }
-        tileTblEl.appendChild(tblRowEl);
     }
 
     
@@ -127,7 +179,7 @@ function Grid(linkedMap, tileSize) {
      * @param {any} tile The number we're pushed
      * @returns Whether or not a [tile] could be pushed into [arr]
      */
-    function setDefltTiles(arr, tile) {
+    setDefltTiles = (arr, tile) => {
         let shouldPush = !arr.includes(tile) & typeof tile == Tile;
 
         if (shouldPush) {
@@ -160,20 +212,6 @@ function Tile(linkedGrid) {
     /** Value of the current tile */
     this.value;
     this.grid = linkedGrid;
-
-    // Partial configuration of this obj's HTMLElements
-    // ------------------------------------------------------ \\ 
-    this.tileEl = document.createElement('div');
-    this.tileEl.setAttribute('class', 'sudoku-tile');
-    this.grid.gridEl.appendChild(this.tileEl);
-
-    this.tileInputEl = document.createElement('input');
-    this.tileInputEl.setAttribute('class', 'sudoku-tile-input');
-    this.tileInputEl.setAttribute('type', 'button');
-    this.tileInputEl.setAttribute('onkeydown', 'limit(this)');
-    this.tileInputEl.setAttribute('onkeyup', 'limit(this)');
-    this.tileEl.appendChild(this.tileInputEl);
-    // ------------------------------------------------------ //
 
     /** Overrided to return a value the tile represets as a String */
     function toString() {

@@ -1,14 +1,5 @@
-﻿#map {
-    background-color: yellow;
-}
-#sudoku-start-conf {
-    position: relative;
-    margin: auto;
-    width: fit-content;
-    top: 95%;
-    background-color: black;
-}
-
-#sudoku-start-conf #sudoku-start-button {
-    background-color: yellow;
+﻿#sudoku-game-field {
+    width: 550px;
+    height: 550px;
+    margin: 5% auto;
 }

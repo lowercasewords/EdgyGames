@@ -41,5 +41,6 @@
     <Content Remove="wwwroot\Information\details.txt" />
     <Content Remove="wwwroot\Information\" />
     <Content Remove="wwwroot\Images\sudoku-game-cover.jpeg" />
+    <Content Remove="wwwroot\favicon.ico" />
   </ItemGroup>
 </Project>

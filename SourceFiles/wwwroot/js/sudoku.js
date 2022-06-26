@@ -42,55 +42,25 @@ function onTileClick(event) {
         function highlightTile(tile) {
             tile.fillSqr('green');
         }
-        // for (let currGR = 0; currGR < grids.length; currGR++) {
-        //     if(grids[currGR] == gR) {
-        //         console.log('skipping base grid');
-        //         continue;
-        //     } 
-        //     console.log('found a grid!');
-        //     let grid = grids[currGR][gC];
-        //     console.log(grid.tiles)
-        //     for (let currTR = 0; currTR < grid.tiles.length; currTR++) {
-        //         if(grid.tiles[currTR] == tR) {
-        //             console.log('skipping base tile');
-        //             continue;
-        //         } 
-        //         console.log('found a tile!');
-        //         let tile = grid.tiles[currTR][tC];
-        //         tile.fillSqr('green');
-        //     }
-        // }
-        let baseGrid = grids[baseTR][baseTC].tiles[baseTR][baseTC];
         for (let currGR = 0; currGR < grids.length; currGR++) {
             for (let currGC = 0; currGC < grids[currGR].length; currGC++) {
                 if(currGR != baseGR && currGC != baseGC) {
-                    console.log('skipping base or unrelated grid');
+                    // console.log(`skipping unrelated grid,  ${currGR}, ${currGC}`);
                     continue;
                 } 
-                console.log('found a grid!');
+                console.log(`found a grid! ${currGR}, ${currGC}`);
+                
+                let isBaseGrid = currGR == baseGR && currGC == baseGC;
+                console.log(isBaseGrid)
                 let grid = grids[currGR][currGC];
-                console.log(grid.tiles)
                 for (let currTR = 0; currTR < grid.tiles.length; currTR++) {
                     for (let currTC = 0; currTC < grid.tiles[currTR].length; currTC++) {
-                        // tiles in the base grid:
-                        if(currGR == baseGR && currGC == baseGC) {
-                            // skip base tile and not crossing ones
-                            if(currTR == baseTR && currTC == baseTC || (currTR != baseTR && currTC != baseTC)) {
-                                continue;
-                            }
-                            // draw tiles in 
-                            console.log('found a tile!');
-                            let tile = grid.tiles[currTR][currTC];
-                            highlightTile(tile);
-                        }
-                        // tile in crossing grid horizontally
-                        else if(currTR == baseTR && currTR == baseTR) {
-                            let tile = grid.tiles[currTR][currTC];
-                            highlightTile(tile);
-                        } 
-                        // tiles in crossing grid vertically
-                        else if(currTC == baseTC && currTC == baseTC) {
-                            let tile = grid.tiles[currTR][currTC];
+                        let tile = grid.tiles[currTR][currTC];
+                        if( !(isBaseGrid && currTR == baseTR && currTC == baseTC) && 
+                        ((isBaseGrid && (currTR == baseTR || currTC == baseTC)) || 
+                        (currGR == baseGR && currTR == baseTR) || 
+                        (currGC == baseGC && currTC == baseTC))) {
+                            
                             highlightTile(tile);
                         }
                     }

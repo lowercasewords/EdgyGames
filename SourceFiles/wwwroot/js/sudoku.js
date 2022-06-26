@@ -45,24 +45,33 @@ function onTileClick(event) {
         for (let currGR = 0; currGR < grids.length; currGR++) {
             for (let currGC = 0; currGC < grids[currGR].length; currGC++) {
                 if(currGR != baseGR && currGC != baseGC) {
-                    // console.log(`skipping unrelated grid,  ${currGR}, ${currGC}`);
+                    // set 100% unrelated grids to default
+                    grids[currGR][currGC].tiles.forEach(_ => 
+                        _.forEach(tile => {
+                            tile.outlineSqr();
+                            tile.fillSqr();
+                        })
+                    );
                     continue;
                 } 
-                console.log(`found a grid! ${currGR}, ${currGC}`);
-                
-                let isBaseGrid = currGR == baseGR && currGC == baseGC;
-                console.log(isBaseGrid)
                 let grid = grids[currGR][currGC];
+                let isBaseGrid = currGR == baseGR && currGC == baseGC;
+
                 for (let currTR = 0; currTR < grid.tiles.length; currTR++) {
                     for (let currTC = 0; currTC < grid.tiles[currTR].length; currTC++) {
+                        // if found correct cross-grid
                         let tile = grid.tiles[currTR][currTC];
-                        if( !(isBaseGrid && currTR == baseTR && currTC == baseTC) && 
-                        ((isBaseGrid && (currTR == baseTR || currTC == baseTC)) || 
-                        (currGR == baseGR && currTR == baseTR) || 
-                        (currGC == baseGC && currTC == baseTC))) {
-                            
-                            highlightTile(tile);
+                        if(isBaseGrid && currTR == baseTR && currTC == baseTC) {
+                            continue;
                         }
+                        else if((isBaseGrid && (currTR == baseTR || currTC == baseTC)) || 
+                        (currGR == baseGR && currTR == baseTR) || 
+                        (currGC == baseGC && currTC == baseTC)) {
+                            highlightTile(tile);
+                            continue;
+                        }
+                        tile.outlineSqr();
+                        tile.fillSqr();
                     }
                 }
             }

@@ -7,29 +7,62 @@ restartGame = () => {
     console.log('game was restarted');
     map.shuffleGrids();
 };
-canvas.onclick = (event) => onTileClick(event);
+canvas.onclick = (event) => 
+{
+    let baseTile = onTileClick(event);
+    console.log('now you can ask for input');
+    if(baseTile != null) {
+        window.onkeydown = (event) => new Promise((result, reject) => {
+            if(event.key != null) {
+                console.log(`Input found: ${event.key}`);
+                result(event.key);
+            } 
+            reject("No input found, rejecting...");
+        }).then(value => {
+            console.log('should be filling num out');
+            baseTile.setValue(value);
+            ctx.fillStyle = 'pink';
+            ctx.font = '50px serif'
+            ctx.fillText(value, baseTile.x + 17, baseTile.y + 50, baseTile.width * 0.7);
+        });
+    }
+}
 
+
+/** 
+ * Determines what function call 
+ * @returns the reference to the tile that was chosen by the player
+*/
 function onTileClick(event) {
-    
+    console.log('click was made');
     let grids = map.grids;
     let eX = event.offsetX,
         eY = event.offsetY;
-    // console.log(`grids.length: ${grids.length}`);
-    outer:
-    for (let gR = 0; gR < grids.length; gR++) {
-        for (let gC = 0; gC < grids[gR].length; gC++) {
-            let tiles = grids[gR][gC].tiles;
-            for (let tR = 0; tR < tiles.length; tR++) {
-                for (let tC = 0; tC < tiles[tR].length; tC++) {
-                    if (inShape(tiles[tR][tC], eX, eY)) {
-                        tiles[tR][tC].fillSqr('blue');
-                        highlightCrossTiles(grids, gR, gC, tR, tC)
-                        break outer;
+    let tile = null;
+    renderSelection();
+    /**
+     * Renderes the selected tile, as well as crossed ones 
+     * whenever the player picks a tile
+     * @returns the main tile that was selected by the player
+     */
+    function renderSelection() {
+        outer:
+        for (let gR = 0; gR < grids.length; gR++) {
+            for (let gC = 0; gC < grids[gR].length; gC++) {
+                let tiles = grids[gR][gC].tiles;
+                for (let tR = 0; tR < tiles.length; tR++) {
+                    for (let tC = 0; tC < tiles[tR].length; tC++) {
+                        if (inShape(tiles[tR][tC], eX, eY)) {;
+                            tile = tiles[tR][tC];
+                            tile.fillSqr('blue');
+                            break outer;
+                        }
                     }
                 }
             }
         }
     }
+    
     /**
      * Visiually highlights all cross tiles, relative to the base tile
      * @param {Array} grids the array of grids
@@ -48,12 +81,15 @@ function onTileClick(event) {
                     // set 100% unrelated grids to default
                     grids[currGR][currGC].tiles.forEach(_ => 
                         _.forEach(tile => {
+                            if(tile.getValue() != undefined) {
+                                return;
+                            }
                             tile.outlineSqr();
                             tile.fillSqr();
                         })
-                    );
-                    continue;
-                } 
+                        );
+                        continue;
+                    } 
                 let grid = grids[currGR][currGC];
                 let isBaseGrid = currGR == baseGR && currGC == baseGC;
 
@@ -70,6 +106,10 @@ function onTileClick(event) {
                             highlightTile(tile);
                             continue;
                         }
+                        if(tile.getValue() != undefined)
+                        {
+                            continue;
+                        }
                         tile.outlineSqr();
                         tile.fillSqr();
                     }
@@ -77,6 +117,7 @@ function onTileClick(event) {
             }
         }
     }
+    return tile;
 }
 /** 
  * Executes when the mouse enters the boundries of the tile
@@ -121,6 +162,9 @@ function onTileExit(event) {
     }
 }
 
+function putChar(tile, char = null) {
+    tile.value
+}
 function inShape(shape, pointX, pointY) {
     return pointX >= shape.x && pointX <= shape.x + shape.width &&
         pointY >= shape.y && pointY <= shape.y + shape.width;
@@ -289,24 +333,20 @@ function Grid(linkedMap, tileAmount, gridWidth, gridX, gridY, outlineColor, fill
 function Tile(linkedGrid, width, x, y, outlineColor, fillColor) {
     Object.setPrototypeOf(this, new Square(width, x, y, outlineColor, fillColor));
     /** Value of the current tile */
-    this.value;
+    let value = null;
     this.grid = linkedGrid;
     
+    this.getValue = () => {
+        return value;
+    }
+    this.setValue = (char) => {
+        console.log(`setting value to ${char}`);
+        
+        value = char?.toString().substring(0, 1);
+    }
     /** Overrided to return a value the tile represets as a String */
     function toString() {
-        return this.value;
-    }
-    /**
-     * Limits the input value length to one & type to number
-     * @param {any} el the element of whose input should be limited
-     */
-    function limit(el) {
-        if (el.value.length > 1) {
-            el.value = el.value.substr(0, 1);
-        }
-        if (typeof el.value != Number) {
-            el.value = null;
-        }
+        return value;
     }
 }
 

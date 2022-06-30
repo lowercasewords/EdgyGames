@@ -1,129 +1,81 @@
-﻿const canvas = document.getElementById('sudoku-canvas');
-const ctx = canvas.getContext('2d');
+﻿
+// NOTE: Coordinates in upper-left corner are (0, 0)! The y-axis is flipped! 
+
+const canvas = document.getElementById('sudoku-canvas');
 canvas.width = canvas.parentElement.offsetWidth;
 canvas.height = canvas.width;
+const ctx = canvas.getContext('2d');
 const map = new Map(3, 3, canvas.width, 0, 0);
-renderMapDefault();
+const grids = map.grids;
 /**
  * Renders the default map (its grids and tiles), should be called before any rendering
  */
- function renderMapDefault() {
-    map.grids.forEach(_ => _.forEach(grid => {
-        // Render each grid
-        grid.fillSqr('red');
-        grid.tiles.forEach(_ => _.forEach(tile => {
-            // rendering each tile
-            tile.outlineSqr();
-            tile.fillSqr();
-        }));
-    }));
-}
+
 restartGame = () => {
     console.log('game was restarted');
     map.shuffleGrids();
-    tilesWithValues = null;
+    // yes this should clear the array
+    tilesWithValues.length = 0;
 };
+const boardRenderer =  {
+    /** Renders the board up-to-date */
+    refreshBoard : () => {
+        boardRenderer.renderMapDefault();
+        if(clkdTileInfo != null) {
+            boardRenderer.rendrerCrossTiles(
+                clkdTileInfo.gridRow, 
+                clkdTileInfo.gridCol, 
+                clkdTileInfo.tileRow,
+                clkdTileInfo.tileCol
+            );
+            boardRenderer.renderClickedTile();
+        }
+        boardRenderer.renderAllValues();
+        console.log('re-rendering is complete');
+    },
 
-const tilesWithValues = [];
-canvas.onclick = function(event)
-{
-    renderMapDefault();
-    // renderValueTiles();
-    console.log('click was made');
-    const grids = map.grids;
-    const eX = event.offsetX, 
-          eY = event.offsetY;      
-    
-    const clkdTileInfo = getClickedTile();
-    // STOP EXECUTION IF TILE WASN'T SELECTED
-    if(clkdTileInfo === null) { 
-        return;
-    }
-    const clickedTile = clkdTileInfo.tile;
-
-    window.onkeydown = (event) =>
-    {   
-        console.log('key is down')
-        new Promise((result, reject) => {
-            if(event.key == null) {
-                reject("No input found, rejecting...");
-            }
-            console.log(`Input found: ${event.key}`);
-            result(event.key);
-            console.log('promise fulfilled');
-        }).then(playerInput => {
-            // Value was set 
-            if(clickedTile.setValue(playerInput)) {
-                tilesWithValues.push(clickedTile);
-                renderAllValues();
-            }
-        });
-    }
-    // Partial rendering
-    //------------------------------\\
-    renderMapDefault();
-    rendrerCrossTiles(
-        clkdTileInfo.gridRow, 
-        clkdTileInfo.gridCol, 
-        clkdTileInfo.tileRow,
-        clkdTileInfo.tileCol
-    );
-    renderClickedTile();
-    renderAllValues();
-    console.log('Rendering complete');
-    //------------------------------//
-    
-    /** Renders a value in a single tile */
-    function renderValue(tile) {
-        tile.fillSqr();
-        tile.outlineSqr();
-        tile.valueHolder.renderValue('brown');
-    }
+    renderMapDefault : () => {
+        map.grids.forEach(_ => _.forEach(grid => {
+            // Render each grid
+            grid.fillSqr('red');
+            grid.tiles.forEach(_ => _.forEach(tile => {
+                // rendering each tile
+                tile.outlineSqr();
+                tile.fillSqr();
+            }));
+        }));
+    },
+    /** Renders a value in a single tile  */
+    renderValue : (tile) => {
+        // tile.fillSqr();
+        // tile.outlineSqr();
+        // tile.valueHolder.renderValue('brown');
+        if(tile.valueHolder.value == null) 
+        { return; }
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'brown'
+        ctx.font = '30px arial';
+        ctx.fillText(tile.valueHolder.value,
+                    tile.valueHolder.x,
+                    tile.valueHolder.y);
+    },
     /**
      * Renders all tiles with **values** in them
      */
-    function renderAllValues() {
-        console.log('rendering the values in the tile');
+    renderAllValues : () => {
         for (let i = 0; i < tilesWithValues.length; i++) {
-           renderValue(tilesWithValues[i]);
+           boardRenderer.renderValue(tilesWithValues[i]);
        }
-    }
-    
+    },
+
     /**
-     * Renders and returns the clicked tile, as well as renders the cross tiles
-     * @return {Object} indecies of the tile in grids & tiles arrays 
-     */
-    function getClickedTile() {
-        for (let gR = 0; gR < grids.length; gR++) {
-            for (let gC = 0; gC < grids[gR].length; gC++) {
-                let tiles = grids[gR][gC].tiles;
-                for (let tR = 0; tR < tiles.length; tR++) {
-                    for (let tC = 0; tC < tiles[tR].length; tC++) {
-                        if (inShape(tiles[tR][tC], eX, eY)) {
-                            // renderClickedTile();
-                            // rendrerCrossTiles(grids, gR, gC, tR, tC);
-                            return {
-                                tile: tiles[tR][tC],
-                                gridRow: gR,
-                                gridCol: gC,
-                                tileRow: tR,
-                                tileCol: tC
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-    /**
-     * Renderes the selected tile, as well as crossed ones 
-     * whenever the player picks a tile 
+     * Renderes the selected tile without the value
      * */
-    function renderClickedTile() {
-        clickedTile.outlineSqr(null);
-        clickedTile.fillSqr('blue');
-    }
+    renderClickedTile : () => {
+        clkdTileInfo.tile.outlineSqr(null);
+        clkdTileInfo.tile.fillSqr('blue');
+        boardRenderer.renderValue(clkdTileInfo.tile);
+    },
     /**
      * Visiually highlights all cross tiles, relative to the base tile
      * @param {Number} baseGR grid row of the base tile
@@ -131,7 +83,7 @@ canvas.onclick = function(event)
      * @param {Number} baseTR tile row of the base tile
      * @param {Number} baseTC tile col of the base tile
      */
-    function rendrerCrossTiles(baseGR, baseGC, baseTR, baseTC) {
+    rendrerCrossTiles : (baseGR, baseGC, baseTR, baseTC) => {
         function highlightTile(tile) {
             tile.fillSqr('green');
         }
@@ -160,69 +112,89 @@ canvas.onclick = function(event)
             }
         }
     }
-
 }
 
-/** 
- * Executes when the mouse enters the boundries of the tile
+boardRenderer.renderMapDefault();
+
+/** All tiles with values */
+const tilesWithValues = [];
+/** Contains clicked tile itself,
+ *  as well as its position in both 2d tile and grid arrays 
+ * */
+let clkdTileInfo = null;
+
+// Event Handlers
+//--------------------------------------------------\\
+window.onkeydown = (event) => {
+    // if could set a number to a tile, add it to value pile
+    if(clkdTileInfo.tile.setValue(event.key)) {
+        tilesWithValues.push(clkdTileInfo.tile);
+        boardRenderer.renderClickedTile();
+        return;
+    }
+    switch (event.key.toLowerCase()) {
+        case 'arrowup':
+        case 'w':
+            console.log("it works!");
+            break;
+        default:
+            break;
+    }
+    boardRenderer.renderClickedTile();
+}
+
+canvas.onclick = (event) => {
+    boardRenderer.refreshBoard();
+    const eX = event.offsetX;
+          eY = event.offsetY;
+    clkdTileInfo = getClickedTileInfo(eX, eY);
+    // STOP EXECUTION IF TILE WASN'T SELECTED
+    if(clkdTileInfo === null) { 
+        console.log('aborting')
+        return;
+    }
+    boardRenderer.refreshBoard();
+}
+//--------------------------------------------------//
+/**
+ * Gets the clicked tile object 
+ * @param {Number} x-coordinate of the click
+ * @param {Number} y-coodrinate of the click
+ * @return {Object} ref to clicked tile and indecies of the tile in grids & tiles arrays 
  */
-function onTileEnter(event) {
-    let grids = map.grids;
-    let eX = event.eX,
-        eY = event.eY;
-    outer:
+function getClickedTileInfo(clickX, clickY) {
     for (let gR = 0; gR < grids.length; gR++) {
         for (let gC = 0; gC < grids[gR].length; gC++) {
             let tiles = grids[gR][gC].tiles;
             for (let tR = 0; tR < tiles.length; tR++) {
                 for (let tC = 0; tC < tiles[tR].length; tC++) {
-                    if (inShape(tiles[tR][tC], eX, eY)) {
-                        tiles[tR][tC].fillSqr('pink');
-                        break outer;
+                    if (tiles[tR][tC].inShape(clickX, clickY)) {
+                        return {
+                            tile: tiles[tR][tC],
+                            gridRow: gR,
+                            gridCol: gC,
+                            tileRow: tR,
+                            tileCol: tC
+                        }
                     }
                 }
             }
         }
     }
+    return null;
 }
 
-function onTileExit(event) {
-    let grids = map.grids;
-    let eX = event.eX,
-        eY = event.eY;
-    outer:
-    for (let gR = 0; gR < grids.length; gR++) {
-        for (let gC = 0; gC < grids[gR].length; gC++) {
-            let tiles = grids[gR][gC].tiles;
-            for (let tR = 0; tR < tiles.length; tR++) {
-                for (let tC = 0; tC < tiles[tR].length; tC++) {
-                    if (inShape(tiles[tR][tC], eX, eY)) {
-                        tiles[tR][tC].fillSqr();
-                        break outer;
-                    }
-                }
-            }
-        }
-    }
-}
 
-function putChar(tile, char = null) {
-    tile.value
-}
-function inShape(shape, pointX, pointY) {
-    return pointX >= shape.x && pointX <= shape.x + shape.width &&
-           pointY >= shape.y && pointY <= shape.y + shape.width;
-}
 
 /**
- * Creates a square with coordination information
+ * Defines a Game Object with default position and render properties
  * @param {Number} width width (and height)
  * @param {Number} x x-coordinate
  * @param {Number} y y-coordinate
  * @param {String} outlineColor default outline color
  * @param {String} fillColor default fill color
  */
-function Square(width, x, y, outlineColor, fillColor) {
+function GameObject(width, x, y, outlineColor, fillColor) {
     this.width = parseInt(width);
     this.x = parseInt(x);
     this.y = parseInt(y);
@@ -238,6 +210,17 @@ function Square(width, x, y, outlineColor, fillColor) {
         ctx.strokeStyle = color;
         ctx.strokeRect(this.x, this.y, this.width, this.width);
     }
+    /**
+     * 
+     * @param {Object} shape with 
+     * @param {*} pointX 
+     * @param {*} pointY 
+     * @returns whether or not specified coordinate hit the shape
+     */
+    this.inShape = (pointX, pointY) => {
+        return pointX >= x && pointX <= x + width &&
+            pointY >= y && pointY <= y + width;
+    }
 }
 
 
@@ -248,7 +231,7 @@ function Square(width, x, y, outlineColor, fillColor) {
  */
 function Map(gridAmount, tileAmount, width, x, y, fillColor, outlineColor) {
 
-    Object.setPrototypeOf(this, new Square(width, x, y, fillColor, outlineColor));
+    Object.setPrototypeOf(this, new GameObject(width, x, y, fillColor, outlineColor));
 
     // Map fill and default Rendering
     //---------------------------------------------------------------------------------\\
@@ -308,18 +291,6 @@ function Map(gridAmount, tileAmount, width, x, y, fillColor, outlineColor) {
         if (checkResult) { }
             // Should be using a check
             this.grids[row, col] = char;
-        /** Validates if char could be put on the grid
-         * @param {any} row row of the grid
-         * @param {any} col col of the grid
-         * @param {any} char the char that should be put in the grid
-         */
-        function setTile(row, col, char) {
-            let checkResult = checkTile(row, col, char);
-            if (checkResult) {
-                // Should be using a check
-                this.grids[row, col] = char;
-            } 
-        }
     }
 }
 /**
@@ -329,7 +300,7 @@ function Map(gridAmount, tileAmount, width, x, y, fillColor, outlineColor) {
  * (for example if tiles == 3 => grid is 3x3)
  * */
 function Grid(linkedMap, tileAmount, gridWidth, gridX, gridY, outlineColor, fillColor) {
-    Object.setPrototypeOf(this, new Square(gridWidth, gridX, gridY, outlineColor, fillColor));
+    Object.setPrototypeOf(this, new GameObject(gridWidth, gridX, gridY, outlineColor, fillColor));
     /** A map obj to which current grid obj is linked to */
     this.map = linkedMap;
     /** Tiles the current grid obj consists of */
@@ -383,27 +354,17 @@ function Grid(linkedMap, tileAmount, gridWidth, gridX, gridY, outlineColor, fill
  * */
 
 function Tile(linkedGrid, width, x, y, outlineColor, fillColor) {
-    Object.setPrototypeOf(this, new Square(width, x, y, outlineColor, fillColor));
+    Object.setPrototypeOf(this, new GameObject(width, x, y, outlineColor, fillColor));
 
     this.grid = linkedGrid;
     // Configuring the value object of this tile
     //--------------------------------------------------------------------------------\\
     this.valueHolder = new function() {
-        Object.setPrototypeOf(this, new Square(width, x , y , 'red', 'violet'));
+        Object.setPrototypeOf(this, new GameObject(width, x + 30 , y + 40, 'null', 'null'));
         /** Value of the current tile */
-        let proto = Object.getPrototypeOf(this);
-        console.log(proto)
-        x = x + 30;
-        y = y + 40;
-        this.value = null,
-        this.renderValue = (color) => {
-            if(this.value == null) { return; }
-            ctx.textAlign = 'center';
-            ctx.fillStyle = color;
-            ctx.font = '30px arial';
-            ctx.fillText(this.value, x, y);
-        }
+        this.value = null
     }
+    //--------------------------------------------------------------------------------//
     this.getValue = () => {
         return this.valueHolder.value;
     }
@@ -413,15 +374,11 @@ function Tile(linkedGrid, width, x, y, outlineColor, fillColor) {
      * @return {Boolean} was the value set or rejected
      */
     this.setValue = (char) => {
-        if(!/\d/.test(char)) { 
-            console.log('whatever was your input, it was not a number');
-            return false;
-        } 
+        // extra check
+        if(!/\d/.test(char)) { return false; } 
         this.valueHolder.value = char?.toString().substring(0, 1);
-        console.log(`set value to ${char}`);
         return true;
     }
-    //--------------------------------------------------------------------------------//
 }
 
 /**

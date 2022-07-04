@@ -1,0 +1,55 @@
+ /**
+ * Defines a 2D Canvas Object with default position
+ * @param {Number} width width (and height)
+ * @param {Number} x x-coordinate
+ * @param {Number} y y-coordinate
+ */
+export class CanvasObj {
+    constructor(width, x, y) {
+        this.width = parseInt(width);
+        this.x = parseInt(x);
+        this.y = parseInt(y);
+
+        /**
+         * Checks if your point is within this object
+         * @param {Object} shape with
+         * @param {*} pointX
+         * @param {*} pointY
+         * @returns whether or not specified coordinate hit the shape
+         */
+        this.inShape = (pointX, pointY) => {
+            return pointX >= x && pointX <= x + width &&
+                pointY >= y && pointY <= y + width;
+        };
+    }
+}
+ /**
+ * Extends a Canvas Class, additionally having 
+ * render properties with custom default color
+ * @param {Number} width width (and height)
+ * @param {Number} x x-coordinate
+ * @param {Number} y y-coordinate
+ * @param {String} outlineColor default outline color
+ * @param {String} fillColor default fill color
+ */
+export class ColorCanvasObj extends CanvasObj{
+    constructor(width, x, y, outlineColor, fillColor) {
+        super(width, x, y);
+        this.fillColor = fillColor;
+        this.outlineColor = outlineColor;
+        this.lineWidth = 5;
+        this.fill = (context, color = this.fillColor) => {
+            context.fillStyle = color;
+            context.fillRect(this.x, this.y, this.width, this.width);
+        };
+        /**
+         * Outlines the 
+         * @param {String} color 
+         */
+        this.outline = (context, color = this.outlineColor) => {
+            context.lineWidth = this.lineWidth;
+            context.strokeStyle = color;
+            context.strokeRect(this.x, this.y, this.width, this.width);
+        };
+    }
+}

@@ -5,10 +5,10 @@
  * @param {Number} y y-coordinate
  */
 export class CanvasObj {
-    constructor(width, x, y) {
-        this.width = parseInt(width);
+    constructor(x, y, width) {
         this.x = parseInt(x);
         this.y = parseInt(y);
+        this.width = parseInt(width);
 
         /**
          * Checks if your point is within this object
@@ -33,8 +33,8 @@ export class CanvasObj {
  * @param {String} fillColor default fill color
  */
 export class ColorCanvasObj extends CanvasObj{
-    constructor(width, x, y, outlineColor, fillColor) {
-        super(width, x, y);
+    constructor(x, y, width, outlineColor, fillColor) {
+        super(x, y, width);
         this.fillColor = fillColor;
         this.outlineColor = outlineColor;
         this.lineWidth = 5;

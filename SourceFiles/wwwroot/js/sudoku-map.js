@@ -54,7 +54,7 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
      * @param {Number} gridAmount amount of grids
      * @param {Number} tileAmount amount of tiles 
      */
-    this.createBoard = () => {
+    this.createBoard = async() => {
         gridAmount = parseInt(gridAmount);
         tileAmount = parseInt(tileAmount);
         ctx.lineWidth = 3;
@@ -89,6 +89,7 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
                 value = 1;
             }
         }
+        console.log(`value ${value} is set`)
         this.grids[baseGR][baseGC].tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
         return true;
     }
@@ -159,10 +160,19 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
             }
         }
         // Same-grid check
-        for(let checkTR = 0; checkTR < this.grids[baseGR][baseGC].tiles.length; checkTR++) {
-            for (let checkTC = 0; checkTC < this.grids[baseGR][[baseGC]].tiles[baseTR].length; checkTC++) {
-                if(this.grids[baseGR][baseGC].tiles[checkTR][checkTC].valueHolder.value == value) {
-                    console.log(`comparing existing ${this.grids[baseGR][baseGC].tiles[checkTR][checkTC].valueHolder.value} to ${value}`)
+        outer:
+        for(let checkTR = 0; checkTR < 3; checkTR++) {
+            for (let checkTC = 0; checkTC < 3; checkTC++) {
+                if(this.grids[baseGR][baseGC].tiles[checkTR] === undefined) {
+                    break outer;
+                }
+                if(this.grids[baseGR][baseGC].tiles[checkTR][checkTC] == undefined) {
+                    break;
+                }
+                let tile = this.grids[baseGR][baseGC].tiles[checkTR][checkTC];
+
+                console.log(`comparing existing ${tile.valueHolder.value} to ${value}`);
+                if(tile.valueHolder.value == value && tile != null) {
                     console.log(`found a in-same-grid repeat ${value} at [${baseGR}, ${baseGC}] {${baseTR}, ${baseTC}}`);
                     return false;
                 }

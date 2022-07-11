@@ -34,16 +34,11 @@ header {
                 color: blue
             }
 
-main {
-    background-color: gray;
+#game-box {
     border-style: dashed;
-    border-color: black;
     margin: auto;
     width: 90vh;
-    height: 80vh;
-}
-
-#game-box {
-    width: 800px;
-    height: 700px;
+    height: 70vh;
+    padding: var(--offset);
+    --offset: 1%;
 }

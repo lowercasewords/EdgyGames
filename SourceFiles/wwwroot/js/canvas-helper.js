@@ -53,3 +53,5 @@ export class ColorCanvasObj extends CanvasObj{
         };
     }
 }
+
+// export window.onresize('resize') 

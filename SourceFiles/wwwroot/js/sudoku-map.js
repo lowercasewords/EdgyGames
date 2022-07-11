@@ -1,44 +1,46 @@
 ﻿import { CanvasObj, ColorCanvasObj } from './canvas-helper.js'
 // NOTE: Coordinates in upper-left corner are (0, 0)! The y-axis is flipped! 
 // NOTE: Calls for starter map creation and rendering happens on the bottom
-
-const canvas = document.getElementById('sudoku-canvas');
-canvas.width = canvas.parentElement.offsetWidth;
-canvas.height = canvas.width;
+const canvas = document.getElementById('sudoku-canvas-map');
+canvas.height = canvas.offsetHeight;
+canvas.width = canvas.height;
 const ctx = canvas.getContext('2d');
 
-let gridAmount = 3;
-let tileAmount = 3;
-let mapX = 0;
-let mapY = 0;
-let tileChance = 50;
+let tileChance = 10;
 
-const map = new Map(mapX, mapY, canvas.width);
+var map = new Map(canvas.width);
 const mapRenderer = new MapRenderer(map);
-let clkdTileInfo = null;
 
 map.createBoard();
 mapRenderer.renderMap();
+console.log(map);
 
-/** Contains clicked tile itself,
- *  as well as its position in both 2d tile and grid arrays 
- * */
-
-
-/** Represents the sudoku map! Starts out most of the logic
+/** Represents the single Sudoku Map! When game starts, map creates nXn 2d array of grids
+ * and each one of them has nXn 2d array of tiles (n is a player specified size)
+ * Each tile in the grids is filled with values to ensure a possible victory, some 
+ * values are then deleted depending on the 'chance' variable
  * @param {Number} x position of this map on x-asis
  * @param {Number} y position of this map on y-axis (y-axis is 0 at the top/descends)
  * @param {Number} width width the map and its elements
+ * @param {Number} gridAmount Amount of grids in a single map row and column
+ * @param {Number} tileAmount Amount of tiles in a single grid row and column
  */
-function Map(x, y, width, gridAmount = 3, tileAmount = 3) {
+function Map(width, gridAmount = 3, tileAmount = 3) {
     // SingleTon
     if(Map.INSTANCE) {
         throw Error(`Cannot create more than one instance of ${this.constructor.call}`);
     }
     Map.INSTANCE = this;
 
-
-    Object.setPrototypeOf(this, new CanvasObj(parseInt(x), parseInt(y), parseInt(canvas.width)));
+    /** Info about currently clicked tile */
+    this.clkdTileInfo = {
+        tile : null,
+        gR : null,
+        gC : null,
+        tC : null,
+        tR : null 
+    }
+    // Object.setPrototypeOf(x, y, this, new CanvasObj(parseInt(x), parseInt(y), parseInt(width)));
 
     this.gridAmount = gridAmount;
     this.tileAmount = tileAmount;
@@ -66,20 +68,46 @@ function Map(x, y, width, gridAmount = 3, tileAmount = 3) {
         }
     }
     //---------------------------------------------------------------------------------//
-
-    /** 
-     * Tries to set a value to the tile 
+    /**
+     * Keeps trying to asign any possible valid value to a tile
      * @param {Number} baseGR The grid row of the tile
      * @param {Number} baseGC The grid column of the tile
-     * @param {String} value value to check
+     * @param {Number} baseTR The tile row of the tile
+     * @param {Number} baseTC The tile column of the tile
+     * @returns Whether or not it is possible to assign any value
+     */
+    this.tryRandomValues = (baseGR, baseGC, baseTR, baseTC) => {
+        let value = randInt(9) + 1;
+        let count = 0;
+        while(!this.checkValue(baseGR, baseGC, baseTR, baseTC, value)) {
+            if (++count >= 9) {
+                console.log('exceeded max count');
+                return false;
+            }
+            // Tries the next value 
+            if (++value >= 10) { 
+                value = 1;
+            }
+        }
+        this.grids[baseGR][baseGC].tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
+        return true;
+    }
+    /** 
+     * Tries to set a value to the tile.
+     * @param {Number} baseGR The grid row of the tile
+     * @param {Number} baseGC The grid column of the tile
+     * @param {Number} baseTR The tile row of the tile
+     * @param {Number} baseTC The tile column of the tile
+     * @param {String} value value The desired value to be assinged.
+     * will be placed
      * @returns {Boolean} whether or not the value was placed
     */
-    this.setTile = (baseGR, baseGC, baseTR, baseTC, tile, value) => {
+    this.setTileValue = (baseGR, baseGC, baseTR, baseTC, value) => {
         /** Continue code if this check has passed (tile value is unique) */
         if(!this.checkValue(baseGR, baseGC, baseTR, baseTC, value)) {
-            return false;
+            return false;   
         }
-        tile.valueHolder.value = value?.toString().substring(0, 1);
+        this.grids[baseGR][baseGC].tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
         return true;
     }
     
@@ -96,6 +124,10 @@ function Map(x, y, width, gridAmount = 3, tileAmount = 3) {
         for (let checkGR = 0; checkGR < this.grids.length; checkGR++) {
             let tiles = this.grids[checkGR][baseGC].tiles;
             for(let checkTR = 0; checkTR < this.grids[checkGR][baseGC].tiles.length; checkTR++) {
+                // skips non-existing grids
+                if(this.grids[checkGR][baseGC] == undefined && baseGR != checkGR) {
+                    return true;
+                }
                 // skips base tile & tiles with no value
                 if(checkGR == baseGR && checkTR == baseTR 
                     || tiles[checkTR][baseTC].valueHolder.value == undefined) {
@@ -111,6 +143,10 @@ function Map(x, y, width, gridAmount = 3, tileAmount = 3) {
         for (let checkGC = 0; checkGC < this.grids[baseGR].length; checkGC++) {
             let tiles = this.grids[baseGR][checkGC].tiles;
             for(let checkTC = 0; checkTC < this.grids[baseGR][checkGC].tiles[baseTR].length; checkTC++) {
+                // skips non-existing grids
+                if(this.grids[baseGR][checkGC] == undefined && baseGC != checkGC) {
+                    return true;
+                }
                 // skips base tile & tiles with no value
                 if(checkGC == baseGC && checkTC == baseTC 
                     || tiles[baseTR][checkTC].valueHolder.value == undefined) {
@@ -126,12 +162,15 @@ function Map(x, y, width, gridAmount = 3, tileAmount = 3) {
         for(let checkTR = 0; checkTR < this.grids[baseGR][baseGC].tiles.length; checkTR++) {
             for (let checkTC = 0; checkTC < this.grids[baseGR][[baseGC]].tiles[baseTR].length; checkTC++) {
                 if(this.grids[baseGR][baseGC].tiles[checkTR][checkTC].valueHolder.value == value) {
+                    console.log(`comparing existing ${this.grids[baseGR][baseGC].tiles[checkTR][checkTC].valueHolder.value} to ${value}`)
+                    console.log(`found a in-same-grid repeat ${value} at [${baseGR}, ${baseGC}] {${baseTR}, ${baseTC}}`);
                     return false;
                 }
             }
         }
         return true;
     }
+
     this.startGame = () => {
         this.createBoard();
     }
@@ -157,7 +196,7 @@ function Map(x, y, width, gridAmount = 3, tileAmount = 3) {
     this.gridWidth = parseInt(gridWidth);
     /** Tiles the current grid obj consists of */
     this.tiles = [];
-    this.tileSize = (this.gridWidth / 3) - 1;
+    this.tileWidth = (this.gridWidth / 3) - 1;
     this.outlineColor = outlineColor;
     this.fillColor = fillColor;
     this.row = row;
@@ -166,12 +205,24 @@ function Map(x, y, width, gridAmount = 3, tileAmount = 3) {
      * Populates the current grid obj with tile objs
      * */ 
     this.createTiles = () => {
+        outer:
         for (let tileRow = 0; tileRow < tileAmount; tileRow++) {
             this.tiles[tileRow] = [];
             for (let tileCol = 0; tileCol < tileAmount; tileCol++) {
-                let tile = new Tile(this, x + (this.tileSize * tileRow), y + (this.tileSize * tileCol), this.tileSize, tileRow, tileCol, 'black', '#F5F5F5');
-                Tile.prototype.trySetDefault(tile, tileChance);
+                let tile = new Tile(this, x + (this.tileWidth * tileRow), y + (this.tileWidth * tileCol), this.tileWidth, tileRow, tileCol, 'black', '#F5F5F5');
                 this.tiles[tileRow][tileCol] = tile;
+                // A random value assignment  
+                if(!linkedMap.tryRandomValues(this.row, this.col, tileRow, tileCol)) {
+                    // tileRow = 0;
+                    // mapRenderer.renderMap();
+                    // continue outer;
+                    console.log(`rejected value at [${this.row}, ${this.col}] {${tileRow}, ${tileCol}}`);
+                }
+                else { 
+                    console.log(`passed value at [${this.row}, ${this.col}] {${tileRow}, ${tileCol}}`);
+
+                }
+                // linkedMap.setTileValue(this.row, this.col, tileRow, tileCol, randInt(9) + 1);
             }
         }
     }
@@ -186,7 +237,6 @@ function Map(x, y, width, gridAmount = 3, tileAmount = 3) {
  * */
 function Tile(linkedGrid, x, y, width, row, col, outlineColor, fillColor) {
     Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(width), outlineColor, fillColor));
-    
     this.linkedGrid = linkedGrid;
     this.row = row;
     this.col = col;
@@ -203,6 +253,7 @@ function Tile(linkedGrid, x, y, width, row, col, outlineColor, fillColor) {
             let value = randInt(9) + 1;
             if(this.linkedGrid.linkedMap.checkValue(this.linkedGrid.row, this.linkedGrid.col, this.row, this.col, value)){
                 tile.valueHolder.value = value;
+                Object.freeze(tile.valueHolder);
             }
         }
     }
@@ -232,12 +283,12 @@ function MapRenderer(map) {
             this.renderGrid(grid);
         }));
         // Render selection
-        if(clkdTileInfo != null) {
+        if(map.clkdTileInfo != null) {
             this.rendrerCrossTiles(
-                clkdTileInfo.gR, 
-                clkdTileInfo.gC, 
-                clkdTileInfo.tR,
-                clkdTileInfo.tC
+                map.clkdTileInfo.gR, 
+                map.clkdTileInfo.gC, 
+                map.clkdTileInfo.tR,
+                map.clkdTileInfo.tC
                 );
             this.renderClickedTile();
         }
@@ -285,10 +336,10 @@ function MapRenderer(map) {
      * Renderes the selected tile with the value
      * */
     this.renderClickedTile = () => {
-        if(clkdTileInfo == null) {
+        if(map.clkdTileInfo.tile == null) {
             return;
         }
-        let clickedTile = clkdTileInfo.tile;
+        let clickedTile = map.clkdTileInfo.tile;
         clickedTile.outline(ctx, null);
         clickedTile.fill(ctx, 'blue');
         this.renderTileValue(clickedTile);
@@ -338,13 +389,13 @@ function MapRenderer(map) {
 //--------------------------------------------------\\
 window.onkeydown = (event) => {
     // if could set a number to a tile, add it to value pile;
-    if(clkdTileInfo == null) {
+    if(map.clkdTileInfo?.tile == null) {
         return;
     }
     // tries to set the players value to the tile
-    if(Tile.prototype.possibleValues.test(event.key) && map.setTile(clkdTileInfo.gR, clkdTileInfo.gC,
-        clkdTileInfo.tR, clkdTileInfo.tC,
-        clkdTileInfo.tile, event.key)) 
+    if(Tile.prototype.possibleValues.test(event.key) && map.setTileValue(map.clkdTileInfo.gR, map.clkdTileInfo.gC,
+        map.clkdTileInfo.tR, map.clkdTileInfo.tC,
+        event.key)) 
     {
         mapRenderer.renderClickedTile();
         return;
@@ -355,7 +406,7 @@ window.onkeydown = (event) => {
     movingWithKeys: 
     if(/(arrow(up|down|left|right)|[wasd])/.test(key)) {  
         let gridsLength = map.grids.length;
-        let tilesLength = map.grids[clkdTileInfo.gR][clkdTileInfo.gC].tiles.length;
+        let tilesLength = map.grids[map.clkdTileInfo.gR][map.clkdTileInfo.gC].tiles.length;
         // 1 == up, 2 == right, 3 == down, 4 == left
         let direction = 0;
         switch (key) {
@@ -388,16 +439,16 @@ window.onkeydown = (event) => {
               grid = direction == 1 || direction == 3 ? 'gC' : 'gR';
 
         // if it's not the last tile in specific direction
-        if(direction == 1 || direction == 4 ? (clkdTileInfo[tile] > 0) : (clkdTileInfo[tile] < tilesLength - 1)) {
-            direction == 1 || direction == 4 ? clkdTileInfo[tile] -= 1 : clkdTileInfo[tile] += 1;
+        if(direction == 1 || direction == 4 ? (map.clkdTileInfo[tile] > 0) : (map.clkdTileInfo[tile] < tilesLength - 1)) {
+            direction == 1 || direction == 4 ? map.clkdTileInfo[tile] -= 1 : map.clkdTileInfo[tile] += 1;
         }
         // if it's the last tile, but there are grids further still
-        else if(direction == 1 || direction == 4 ? clkdTileInfo[grid] > 0 : clkdTileInfo[grid] < gridsLength - 1) {
-            direction == 1 || direction == 4 ? clkdTileInfo[grid] -= 1 : clkdTileInfo[grid] += 1;
-            direction == 1 || direction == 4 ? clkdTileInfo[tile] = tilesLength - 1 : clkdTileInfo[tile] = 0;
+        else if(direction == 1 || direction == 4 ? map.clkdTileInfo[grid] > 0 : map.clkdTileInfo[grid] < gridsLength - 1) {
+            direction == 1 || direction == 4 ? map.clkdTileInfo[grid] -= 1 : map.clkdTileInfo[grid] += 1;
+            direction == 1 || direction == 4 ? map.clkdTileInfo[tile] = tilesLength - 1 : map.clkdTileInfo[tile] = 0;
         }
         // reasigning the reference to a tile itself
-        clkdTileInfo.tile = map.grids[clkdTileInfo.gR][clkdTileInfo.gC].tiles[clkdTileInfo.tR][clkdTileInfo.tC];
+        map.clkdTileInfo.tile = map.grids[map.clkdTileInfo.gR][map.clkdTileInfo.gC].tiles[map.clkdTileInfo.tR][map.clkdTileInfo.tC];
         mapRenderer.renderMap();
     }
 }
@@ -406,38 +457,44 @@ canvas.onclick = (event) => {
     mapRenderer.renderMap();
     const eX = event.offsetX,
           eY = event.offsetY;
-    clkdTileInfo = getClickedTileInfo(eX, eY);
+    updateClickedTile(eX, eY);
     mapRenderer.renderMap();
 }
+
 //--------------------------------------------------//
 
 
 /**
- * Gets the clicked tile object 
+ * Updates the clicked tile object 
  * @param {Number} x-coordinate of the click
  * @param {Number} y-coodrinate of the click
- * @returns {Object} ref to clicked tile and indecies of the tile in grids & tiles arrays 
  */
-function getClickedTileInfo(clickX, clickY) {
+function updateClickedTile(clickX, clickY) {
     for (let gR = 0; gR < map.grids.length; gR++) {
         for (let gC = 0; gC < map.grids[gR].length; gC++) {
             let tiles = map.grids[gR][gC].tiles;
             for (let tR = 0; tR < tiles.length; tR++) {
-                for (let tC = 0; tC < tiles[tR].length; tC++) {
-                    if (tiles[tR][tC].inShape(clickX, clickY)) {
-                        return {
-                            tile: tiles[tR][tC],
-                            gR: gR,
-                            gC: gC,
-                            tC: tC,
-                            tR: tR
-                        }
+                for (let tC = 0; tC < tiles[tR].length; tC++) 
+                {
+                    if (tiles[tR][tC].inShape(clickX, clickY)) 
+                    {
+                        map.clkdTileInfo.tile = tiles[tR][tC];
+                        map.clkdTileInfo.gR = gR;
+                        map.clkdTileInfo.gC = gC;
+                        map.clkdTileInfo.tC = tC;
+                        map.clkdTileInfo.tR = tR;
+                        console.log(map.clkdTileInfo)
+                        return;
                     }
                 }
             }
         }
     }
-    return null;
+    map.clkdTileInfo.tile = null;
+    map.clkdTileInfo.gR = null;
+    map.clkdTileInfo.gC = null;
+    map.clkdTileInfo.tC = null;
+    map.clkdTileInfo.tR = null;
 }
 
 /**

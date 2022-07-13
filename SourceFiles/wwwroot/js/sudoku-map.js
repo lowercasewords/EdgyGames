@@ -13,7 +13,7 @@ const mapRenderer = new MapRenderer(map);
 
 map.createBoard();
 mapRenderer.renderMap();
-console.log(map);
+
 
 /** Represents the single Sudoku Map! When game starts, map creates nXn 2d array of grids
  * and each one of them has nXn 2d array of tiles (n is a player specified size)
@@ -40,6 +40,37 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
         tC : null,
         tR : null 
     }
+    /**
+     * Updates the clicked tile object 
+     * @param {Number} x-coordinate of the click
+     * @param {Number} y-coodrinate of the click
+     */
+    this.updateClickedTile = (clickX, clickY) => {
+        for (let gR = 0; gR < map.grids.length; gR++) {
+            for (let gC = 0; gC < map.grids[gR].length; gC++) {
+                let tiles = map.grids[gR][gC].tiles;
+                for (let tR = 0; tR < tiles.length; tR++) {
+                    for (let tC = 0; tC < tiles[tR].length; tC++) 
+                    {
+                        if (tiles[tR][tC].inShape(clickX, clickY)) 
+                        {
+                            this.clkdTileInfo.tile = tiles[tR][tC];
+                            this.clkdTileInfo.gR = gR;
+                            this.clkdTileInfo.gC = gC;
+                            this.clkdTileInfo.tC = tC;
+                            this.clkdTileInfo.tR = tR;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+        this.clkdTileInfo.tile = null;
+        this.clkdTileInfo.gR = null;
+        this.clkdTileInfo.tC = null;
+        this.clkdTileInfo.gC = null;
+        this.clkdTileInfo.tR = null;
+    }
     // Object.setPrototypeOf(x, y, this, new CanvasObj(parseInt(x), parseInt(y), parseInt(width)));
 
     this.gridAmount = gridAmount;
@@ -49,6 +80,13 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
     this.grids = [];
     /** Physical width of each grid in px */
     this.gridWidth = this.width / gridAmount;
+
+    this.startGame = () => {
+        this.createBoard();
+    }
+    this.endGame = () => {
+        // Do something
+    }
     /**
      * Initializes the grids and tiles of the map
      * @param {Number} gridAmount amount of grids
@@ -68,49 +106,6 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
         }
     }
     //---------------------------------------------------------------------------------//
-    /**
-     * Keeps trying to asign any possible valid value to a tile
-     * @param {Number} baseGR The grid row of the tile
-     * @param {Number} baseGC The grid column of the tile
-     * @param {Number} baseTR The tile row of the tile
-     * @param {Number} baseTC The tile column of the tile
-     * @returns Whether or not it is possible to assign any value
-     */
-    this.tryRandomValues = (baseGR, baseGC, baseTR, baseTC) => {
-        let value = randInt(9) + 1;
-        let count = 0;
-        while(!this.checkValue(baseGR, baseGC, baseTR, baseTC, value)) {
-            if (++count >= 9) {
-                console.log('exceeded max count');
-                return false;
-            }
-            // Tries the next value 
-            if (++value >= 10) { 
-                value = 1;
-            }
-        }
-        console.log(`value ${value} is set`)
-        this.grids[baseGR][baseGC].tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
-        return true;
-    }
-    /** 
-     * Tries to set a value to the tile.
-     * @param {Number} baseGR The grid row of the tile
-     * @param {Number} baseGC The grid column of the tile
-     * @param {Number} baseTR The tile row of the tile
-     * @param {Number} baseTC The tile column of the tile
-     * @param {String} value value The desired value to be assinged.
-     * will be placed
-     * @returns {Boolean} whether or not the value was placed
-    */
-    this.setTileValue = (baseGR, baseGC, baseTR, baseTC, value) => {
-        /** Continue code if this check has passed (tile value is unique) */
-        if(!this.checkValue(baseGR, baseGC, baseTR, baseTC, value)) {
-            return false;   
-        }
-        this.grids[baseGR][baseGC].tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
-        return true;
-    }
     
     /** 
      * Checks whether or not the value is not repeating accross the map
@@ -118,79 +113,86 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
      * @param {Number} baseGC The grid column of the tile
      * @param {Number} baseGR The tile row of the tile
      * @param {Number} baseGC The tile column of the tile
-     * @returns {Boolean} true if value is not repeating -> value was set to a tile, otherwise false
+     * @returns True if value is not repeating -> value was set to a tile, otherwise false
      */
     this.checkValue = (baseGR, baseGC, baseTR, baseTC, value) => {
-        // Horizontal Check
-        for (let checkGR = 0; checkGR < this.grids.length; checkGR++) {
-            let tiles = this.grids[checkGR][baseGC].tiles;
-            for(let checkTR = 0; checkTR < this.grids[checkGR][baseGC].tiles.length; checkTR++) {
-                // skips non-existing grids
-                if(this.grids[checkGR][baseGC] == undefined && baseGR != checkGR) {
-                    return true;
-                }
-                // skips base tile & tiles with no value
-                if(checkGR == baseGR && checkTR == baseTR 
-                    || tiles[checkTR][baseTC].valueHolder.value == undefined) {
+        return checkValuesHorizAsync(this.grids, baseGR, baseGC, baseTR, baseTC, value)
+            && checkValuesVertAsync(this.grids, baseGR, baseGC, baseTR, baseTC, value)
+            && this.grids[baseGR][baseGC].checkGridValuesAsync(value);
+    }
+    /**
+     * Checks if the specific value is unique horizontally across the grids in one tile lane
+     * @param {Number} baseGR Grid row of the value
+     * @param {Number} baseGC Grid column of the value 
+     * @param {Number} baseTR Tile row of the value 
+     * @param {Number} baseTC Tile column of the value 
+     * @param {Number} value The value to be checked
+     * @returns Whether or not the value is unique horizontally
+     */
+    async function checkValuesHorizAsync(grids, baseGR, baseGC, baseTR, baseTC, value) {
+        return await new Promise((resolve, rejected) => {
+            // Horizontal Check
+            for (let checkGR = 0; checkGR < grids.length; checkGR++) {
+                let tiles = grids[checkGR][baseGC].tiles;
+                for(let checkTR = 0; checkTR < grids[checkGR][baseGC].tiles.length; checkTR++) {
+                    // skips non-existing grids
+                    if(grids[checkGR][baseGC] == undefined && baseGR != checkGR) {
+                        resolve(true);
+                        return;
+                    }
+                    // skips base tile & tiles with no value
+                    if(checkGR == baseGR && checkTR == baseTR 
+                        || tiles[checkTR][baseTC]?.valueHolder.value == undefined) {
                         continue;
-                }
-                // if a repeating one
-                if(tiles[checkTR][baseTC].valueHolder.value == value) {
-                    return false;
+                    }
+                    // if a repeating one
+                    if(tiles[checkTR][baseTC].valueHolder.value == value) {
+                        rejected();
+                        return;
+                    }
                 }
             }
-        }
+            resolve(true); 
+        });
+    }
+    /**
+     * Checks if the specific value is unique vertically across the grids in one tile lane
+     * @param {Number} baseGR Grid row of the value
+     * @param {Number} baseGC Grid column of the value 
+     * @param {Number} baseTR Tile row of the value 
+     * @param {Number} baseTC Tile column of the value 
+     * @param {Number} value The value to be checked
+     * @returns Whether or not the value is unique vertically
+     */
+    async function checkValuesVertAsync(grids, baseGR, baseGC, baseTR, baseTC, value) {
         // Vertical Check
-        for (let checkGC = 0; checkGC < this.grids[baseGR].length; checkGC++) {
-            let tiles = this.grids[baseGR][checkGC].tiles;
-            for(let checkTC = 0; checkTC < this.grids[baseGR][checkGC].tiles[baseTR].length; checkTC++) {
-                // skips non-existing grids
-                if(this.grids[baseGR][checkGC] == undefined && baseGC != checkGC) {
-                    return true;
-                }
-                // skips base tile & tiles with no value
-                if(checkGC == baseGC && checkTC == baseTC 
-                    || tiles[baseTR][checkTC].valueHolder.value == undefined) {
-                        continue;
-                }
-                // if a repeating one
-                if(tiles[baseTR][checkTC].valueHolder.value == value) {
-                    return false;
-                }
-            }
-        }
-        // Same-grid check
-        outer:
-        for(let checkTR = 0; checkTR < 3; checkTR++) {
-            for (let checkTC = 0; checkTC < 3; checkTC++) {
-                if(this.grids[baseGR][baseGC].tiles[checkTR] === undefined) {
-                    break outer;
-                }
-                if(this.grids[baseGR][baseGC].tiles[checkTR][checkTC] == undefined) {
-                    break;
-                }
-                let tile = this.grids[baseGR][baseGC].tiles[checkTR][checkTC];
-
-                console.log(`comparing existing ${tile.valueHolder.value} to ${value}`);
-                if(tile.valueHolder.value == value && tile != null) {
-                    console.log(`found a in-same-grid repeat ${value} at [${baseGR}, ${baseGC}] {${baseTR}, ${baseTC}}`);
-                    return false;
+        return await new Promise((resolve, reject) => {
+            for (let checkGC = 0; checkGC < grids[baseGR].length; checkGC++) {
+                let tiles = grids[baseGR][checkGC].tiles;
+                for(let checkTC = 0; checkTC < grids[baseGR][checkGC].tiles[baseTR].length; checkTC++) {
+                    // skips non-existing grids
+                    if(grids[baseGR][checkGC] == undefined && baseGC != checkGC) {
+                        resolve(true);
+                    }
+                    // skips base tile & tiles with no value
+                    if(checkGC == baseGC && checkTC == baseTC 
+                        || tiles[baseTR][checkTC]?.valueHolder.value == undefined) {
+                            continue;
+                    }
+                    // if a repeating one
+                    if(tiles[baseTR][checkTC].valueHolder.value == value) {
+                        reject(false);
+                        return;
+                    }
                 }
             }
-        }
-        return true;
-    }
-
-    this.startGame = () => {
-        this.createBoard();
-    }
-    this.endGame = () => {
-        // Do something
+            resolve(true);
+        });
     }
 }
 
 /**
- * Creates a grid object connected to a map
+ * Creates a grid object connected to a map. Asigns values to the tiles
  * @param {Number} tileAmount An amount of tiles in this grid 
  * @param {Number} x x position of this obj (starts to the left)
  * @param {Number} y y position of this obj (starts on top)
@@ -215,18 +217,54 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
      * Populates the current grid obj with tile objs
      * */ 
     this.createTiles = () => {
-        outer:
         for (let tileRow = 0; tileRow < tileAmount; tileRow++) {
             this.tiles[tileRow] = [];
             for (let tileCol = 0; tileCol < tileAmount; tileCol++) {
                 let tile = new Tile(this, x + (this.tileWidth * tileRow), y + (this.tileWidth * tileCol), this.tileWidth, tileRow, tileCol, 'black', '#F5F5F5');
                 this.tiles[tileRow][tileCol] = tile;
-                // A random value assignment  
+            }
+        }
+    }
+    /**
+     * Checks if the specific value is unique in the same grid
+     * @param {Number} value A value to be checked
+     * @returns Whether or not the value was unique
+     */
+    this.checkGridValuesAsync = (value) => {
+        // Same-grid check
+        outer:
+        for(let checkTR = 0; checkTR < 3; checkTR++) {
+            for (let checkTC = 0; checkTC < 3; checkTC++) {
+                // If row is undifined, don't check it 
+                if(this.tiles[checkTR] === undefined) {
+                    break outer;
+                }
+                // If col is undifined, don't check it
+                if(this.tiles[checkTR][checkTC] == undefined) {
+                    break;
+                }
+                let tile = this.tiles[checkTR][checkTC];
+
+                console.log(`comparing existing ${tile.valueHolder.value} to ${value}`);
+                if(tile.valueHolder.value == value && tile != null) {
+                    console.log(`found a in-same-grid repeat ${value} at [${this.row}, ${this.col}] {${checkTR}, ${checkTC}}`);
+                    return false;
+                }
+            }
+        }
+    }
+    this.setAllTileValues = () => {
+        // A random value assignment  
+        let count = 0;
+        outer:
+        for (let tileRow = 0; tileRow < tileAmount; tileRow++) {
+            for (let tileCol = 0; tileCol < tileAmount; tileCol++) {
                 if(!linkedMap.tryRandomValues(this.row, this.col, tileRow, tileCol)) {
-                    // tileRow = 0;
-                    // mapRenderer.renderMap();
-                    // continue outer;
+                    if(count > 10) {
+                        
+                    }
                     console.log(`rejected value at [${this.row}, ${this.col}] {${tileRow}, ${tileCol}}`);
+                    break;
                 }
                 else { 
                     console.log(`passed value at [${this.row}, ${this.col}] {${tileRow}, ${tileCol}}`);
@@ -235,6 +273,44 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
                 // linkedMap.setTileValue(this.row, this.col, tileRow, tileCol, randInt(9) + 1);
             }
         }
+    }
+    /**
+     * Keeps trying to asign any possible valid value to a single tile
+     * @param {Number} baseTR The tile row of the tile
+     * @param {Number} baseTC The tile column of the tile
+     * @returns Whether or not it is possible to assign any value
+     */
+     this.tryRandomTileValues = (baseTR, baseTC) => {
+        let value = randInt(9) + 1;
+        let count = 0;
+        while(!linkedMap.checkValue(this.row, this.col, baseTR, baseTC, value)) {
+            if (++count >= 9) {
+                console.log('exceeded max count');
+                return false;
+            }
+            // Tries the next value 
+            if (++value >= 10) { 
+                value = 1;
+            }
+        }
+        console.log(`value ${value} is set`)
+        this.tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
+        return true;
+    }
+    /** 
+     * Tries to set a value to the tile.
+     * @param {Number} baseTR The tile row of the tile
+     * @param {Number} baseTC The tile column of the tile
+     * @param {String} value value The desired value to be assinged.
+     * @returns {Boolean} whether or not the value was placed
+    */
+    this.setTileValue = (baseTR, baseTC, value) => {
+        /** Continue code if this check has passed (tile value is unique) */
+        if(!this.linkedMap.checkValue(baseTR, baseTC, value)) {
+            return false;   
+        }
+        this.tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
+        return true;
     }
 }
 
@@ -402,10 +478,10 @@ window.onkeydown = (event) => {
     if(map.clkdTileInfo?.tile == null) {
         return;
     }
+    let clickedGrid = map.grids[map.clkdTileInfo.gR][map.clkdTileInfo.gC];
     // tries to set the players value to the tile
-    if(Tile.prototype.possibleValues.test(event.key) && map.setTileValue(map.clkdTileInfo.gR, map.clkdTileInfo.gC,
-        map.clkdTileInfo.tR, map.clkdTileInfo.tC,
-        event.key)) 
+    if(Tile.prototype.possibleValues.test(event.key) 
+        && clickedGrid.setTileValue(map.clkdTileInfo.tR, map.clkdTileInfo.tC, event.key)) 
     {
         mapRenderer.renderClickedTile();
         return;
@@ -467,45 +543,11 @@ canvas.onclick = (event) => {
     mapRenderer.renderMap();
     const eX = event.offsetX,
           eY = event.offsetY;
-    updateClickedTile(eX, eY);
+    map.updateClickedTile(eX, eY);
     mapRenderer.renderMap();
 }
 
 //--------------------------------------------------//
-
-
-/**
- * Updates the clicked tile object 
- * @param {Number} x-coordinate of the click
- * @param {Number} y-coodrinate of the click
- */
-function updateClickedTile(clickX, clickY) {
-    for (let gR = 0; gR < map.grids.length; gR++) {
-        for (let gC = 0; gC < map.grids[gR].length; gC++) {
-            let tiles = map.grids[gR][gC].tiles;
-            for (let tR = 0; tR < tiles.length; tR++) {
-                for (let tC = 0; tC < tiles[tR].length; tC++) 
-                {
-                    if (tiles[tR][tC].inShape(clickX, clickY)) 
-                    {
-                        map.clkdTileInfo.tile = tiles[tR][tC];
-                        map.clkdTileInfo.gR = gR;
-                        map.clkdTileInfo.gC = gC;
-                        map.clkdTileInfo.tC = tC;
-                        map.clkdTileInfo.tR = tR;
-                        console.log(map.clkdTileInfo)
-                        return;
-                    }
-                }
-            }
-        }
-    }
-    map.clkdTileInfo.tile = null;
-    map.clkdTileInfo.gR = null;
-    map.clkdTileInfo.gC = null;
-    map.clkdTileInfo.tC = null;
-    map.clkdTileInfo.tR = null;
-}
 
 /**
  *  @param {any} n Max number for the range (excluded)

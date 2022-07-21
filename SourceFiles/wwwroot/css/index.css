@@ -2,7 +2,10 @@
     font-family: 'Common Pixel', sans-serif;
     background-color: grey;
 }
-
+@font-face {
+    font-family: face;
+    src: url();
+}
 header {
     z-index: 1;
     top: 5px;

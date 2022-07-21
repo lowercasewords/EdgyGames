@@ -1,9 +1,7 @@
-﻿import { CanvasObj, ColorCanvasObj } from './canvas-helper.js'
+﻿import { CanvasObj, ColorCanvasObj } from '../CanvasBasics/canvas-helper.js'
 // NOTE: Coordinates in upper-left corner are (0, 0)! The y-axis is flipped! 
 // NOTE: Calls for starter map creation and rendering happens on the bottom
 const canvas = document.getElementById('sudoku-canvas-map');
-canvas.height = canvas.offsetHeight;
-canvas.width = canvas.height;
 const ctx = canvas.getContext('2d');
 
 let tileChance = 10;
@@ -13,8 +11,14 @@ const mapRenderer = new MapRenderer(map);
 
 map.createBoard();
 mapRenderer.renderMap();
+resizeCanvas();
 
-
+function resizeCanvas() {
+    canvas.height = canvas.offsetHeight;
+    canvas.width = canvas.offsetWidth;
+    console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
+    mapRenderer.renderMap();
+}
 /** Represents the single Sudoku Map! When game starts, map creates nXn 2d array of grids
  * and each one of them has nXn 2d array of tiles (n is a player specified size)
  * Each tile in the grids is filled with values to ensure a possible victory, some 
@@ -32,6 +36,17 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
     }
     Map.INSTANCE = this;
 
+    this.gridAmount = gridAmount;
+    this.tileAmount = tileAmount;
+    this.width = width;
+    /** 2d array of map grids */
+    this.grids = [];
+    /** Physical width of each grid in pixels */
+    this.updatedGridWidth = function() {
+        return this.width / gridAmount;
+    };
+    this.gridWidth = this.updatedGridWidth();
+    /** Updates grid size and ALL ITS COMPONENTS */
     /** Info about currently clicked tile */
     this.clkdTileInfo = {
         tile : null,
@@ -71,15 +86,6 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
         this.clkdTileInfo.gC = null;
         this.clkdTileInfo.tR = null;
     }
-    // Object.setPrototypeOf(x, y, this, new CanvasObj(parseInt(x), parseInt(y), parseInt(width)));
-
-    this.gridAmount = gridAmount;
-    this.tileAmount = tileAmount;
-    this.width = width;
-    /** 2d array of map grids */
-    this.grids = [];
-    /** Physical width of each grid in px */
-    this.gridWidth = this.width / gridAmount;
 
     this.startGame = () => {
         this.createBoard();
@@ -92,7 +98,7 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
      * @param {Number} gridAmount amount of grids
      * @param {Number} tileAmount amount of tiles 
      */
-    this.createBoard = async() => {
+    this.createBoard = () => {
         gridAmount = parseInt(gridAmount);
         tileAmount = parseInt(tileAmount);
         ctx.lineWidth = 3;
@@ -105,20 +111,38 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
             }
         }
     }
-    //---------------------------------------------------------------------------------//
     
+    /**
+     * Scales the components to match the intended position on the canvas, 
+     * usually done window on resize
+     */
+    this.reScale = () => {
+        this.grids.forEach(_ => _.forEach(grid => {
+            for (let row = 0; row < gridAmount; row++) {
+                for (let col = 0; col < gridAmount; col++) {
+                    let grid = this.grids[row][col]; 
+                    grid.x = row * gridS;
+                }
+            }
+        }));
+    }
+    
+    // Value check methods
+    //------------------------------------------------------------------------\\
     /** 
-     * Checks whether or not the value is not repeating accross the map
+     * Checks whether or not the value is not repeating accross the map or inside of its grid
      * @param {Number} baseGR The grid row of the tile
      * @param {Number} baseGC The grid column of the tile
      * @param {Number} baseGR The tile row of the tile
      * @param {Number} baseGC The tile column of the tile
      * @returns True if value is not repeating -> value was set to a tile, otherwise false
      */
-    this.checkValue = (baseGR, baseGC, baseTR, baseTC, value) => {
-        return checkValuesHorizAsync(this.grids, baseGR, baseGC, baseTR, baseTC, value)
-            && checkValuesVertAsync(this.grids, baseGR, baseGC, baseTR, baseTC, value)
-            && this.grids[baseGR][baseGC].checkGridValuesAsync(value);
+    this.checkValue = async (baseGR, baseGC, baseTR, baseTC, value) => {
+        let horizCheck = checkValuesHoriz(this.grids, baseGR, baseGC, baseTR, baseTC, value);
+        let vertCheck = checkValuesVert(this.grids, baseGR, baseGC, baseTR, baseTC, value);
+        
+        let gridCheck = this.grids[baseGR][baseGC].checkGridValues(value);
+        return (await Promise.all([horizCheck, vertCheck, gridCheck])).every(result => result == true);
     }
     /**
      * Checks if the specific value is unique horizontally across the grids in one tile lane
@@ -129,8 +153,9 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
      * @param {Number} value The value to be checked
      * @returns Whether or not the value is unique horizontally
      */
-    async function checkValuesHorizAsync(grids, baseGR, baseGC, baseTR, baseTC, value) {
-        return await new Promise((resolve, rejected) => {
+    function checkValuesHoriz(grids, baseGR, baseGC, baseTR, baseTC, value) {
+        console.log('horizontally')
+        return new Promise((resolve, rejected) => {
             // Horizontal Check
             for (let checkGR = 0; checkGR < grids.length; checkGR++) {
                 let tiles = grids[checkGR][baseGC].tiles;
@@ -147,7 +172,7 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
                     }
                     // if a repeating one
                     if(tiles[checkTR][baseTC].valueHolder.value == value) {
-                        rejected();
+                        resolve(true);
                         return;
                     }
                 }
@@ -164,15 +189,17 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
      * @param {Number} value The value to be checked
      * @returns Whether or not the value is unique vertically
      */
-    async function checkValuesVertAsync(grids, baseGR, baseGC, baseTR, baseTC, value) {
+    function checkValuesVert(grids, baseGR, baseGC, baseTR, baseTC, value) {
         // Vertical Check
-        return await new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             for (let checkGC = 0; checkGC < grids[baseGR].length; checkGC++) {
                 let tiles = grids[baseGR][checkGC].tiles;
+                console.log(tiles);
                 for(let checkTC = 0; checkTC < grids[baseGR][checkGC].tiles[baseTR].length; checkTC++) {
                     // skips non-existing grids
                     if(grids[baseGR][checkGC] == undefined && baseGC != checkGC) {
                         resolve(true);
+                        return;
                     }
                     // skips base tile & tiles with no value
                     if(checkGC == baseGC && checkTC == baseTC 
@@ -181,7 +208,7 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
                     }
                     // if a repeating one
                     if(tiles[baseTR][checkTC].valueHolder.value == value) {
-                        reject(false);
+                        resolve(false);
                         return;
                     }
                 }
@@ -189,6 +216,7 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
             resolve(true);
         });
     }
+    //------------------------------------------------------------------------//
 }
 
 /**
@@ -206,6 +234,8 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
     
     this.linkedMap = linkedMap;
     this.gridWidth = parseInt(gridWidth);
+    this.x = x;
+    this.y = y;
     /** Tiles the current grid obj consists of */
     this.tiles = [];
     this.tileWidth = (this.gridWidth / 3) - 1;
@@ -230,28 +260,34 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
      * @param {Number} value A value to be checked
      * @returns Whether or not the value was unique
      */
-    this.checkGridValuesAsync = (value) => {
-        // Same-grid check
-        outer:
-        for(let checkTR = 0; checkTR < 3; checkTR++) {
-            for (let checkTC = 0; checkTC < 3; checkTC++) {
-                // If row is undifined, don't check it 
-                if(this.tiles[checkTR] === undefined) {
-                    break outer;
-                }
-                // If col is undifined, don't check it
-                if(this.tiles[checkTR][checkTC] == undefined) {
-                    break;
-                }
-                let tile = this.tiles[checkTR][checkTC];
+    this.checkGridValues = (value) => {
+        console.log(`still trying ${value}`);
+        return new Promise((resolve, reject) => { 
+            // Same-grid check
+            outer:
+            for(let checkTR = 0; checkTR < 3; checkTR++) {
+                for(let checkTC = 0; checkTC < 3; checkTC++) {
+                    // // If row is undifined, don't check it 
+                    // if(this.tiles[checkTR] === undefined) {
+                    //     break outer;
+                    // }
+                    // // If col is undifined, don't check it
+                    // if(this.tiles[checkTR][checkTC] == undefined) {
+                    //     break;
+                    // }
+                    let tile = this.tiles[checkTR][checkTC];
 
-                console.log(`comparing existing ${tile.valueHolder.value} to ${value}`);
-                if(tile.valueHolder.value == value && tile != null) {
-                    console.log(`found a in-same-grid repeat ${value} at [${this.row}, ${this.col}] {${checkTR}, ${checkTC}}`);
-                    return false;
+                    console.log(`comparing existing ${tile.valueHolder.value} to ${value}`);
+                    // Found a repetitive value
+                    if(tile.valueHolder.value == value && tile != null) {
+                        console.log(`found a in-same-grid repeat ${value} at [${this.row}, ${this.col}] {${checkTR}, ${checkTC}}`);
+                        resolve(false);
+                        return;
+                    }
                 }
             }
-        }
+            resolve(true);
+        });
     }
     this.setAllTileValues = () => {
         // A random value assignment  
@@ -306,7 +342,8 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
     */
     this.setTileValue = (baseTR, baseTC, value) => {
         /** Continue code if this check has passed (tile value is unique) */
-        if(!this.linkedMap.checkValue(baseTR, baseTC, value)) {
+        console.log(`trying to set ${value}`);
+        if(!this.linkedMap.checkValue(this.row, this.col, baseTR, baseTC, value)) {
             return false;   
         }
         this.tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
@@ -323,6 +360,10 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
  * */
 function Tile(linkedGrid, x, y, width, row, col, outlineColor, fillColor) {
     Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(width), outlineColor, fillColor));
+
+    this.x = x;
+    this.y = y;
+    this.width = width;
     this.linkedGrid = linkedGrid;
     this.row = row;
     this.col = col;
@@ -337,7 +378,7 @@ function Tile(linkedGrid, x, y, width, row, col, outlineColor, fillColor) {
     Tile.prototype.trySetDefault = (tile, chance) => {
         if(randInt(100) < chance) {
             let value = randInt(9) + 1;
-            if(this.linkedGrid.linkedMap.checkValue(this.linkedGrid.row, this.linkedGrid.col, this.row, this.col, value)){
+            if(this.linkedGrid.checkValue(this.row, this.col, tile.row, tile.col, value)){
                 tile.valueHolder.value = value;
                 Object.freeze(tile.valueHolder);
             }
@@ -350,8 +391,10 @@ function Tile(linkedGrid, x, y, width, row, col, outlineColor, fillColor) {
         /** Value of the current tile */
         value : null,
     }
-    Object.setPrototypeOf(this.valueHolder, new ColorCanvasObj(x + 30 , y + 40, width, 'null', 'null'));
+    Object.setPrototypeOf(this.valueHolder, new ColorCanvasObj(x + 15, y + 30, this.width, 'null', 'null'));
+    // this.valueHolder.fill(ctx, 'red')
     //--------------------------------------------------------------------------------//
+
     this.getValue = () => {
         return this.valueHolder.value;
     }
@@ -391,7 +434,6 @@ function MapRenderer(map) {
     }
     // Methods for rendering tiles
     //----------------------------------------------------------------\\
-    //----------------------------------------------------------------\\
     /**
      * Renders individual tile
      * @param {Tile} tile tile to render
@@ -411,9 +453,9 @@ function MapRenderer(map) {
         {
             return;
         }
-        ctx.textAlign = 'center';
+        // ctx.textAlign = 'center';
         ctx.fillStyle = 'brown'
-        ctx.font = '30px arial';
+        ctx.font = '35px arial';
         ctx.fillText(tile.valueHolder.value,
             tile.valueHolder.x,
             tile.valueHolder.y);
@@ -468,11 +510,15 @@ function MapRenderer(map) {
         }
     }
     //----------------------------------------------------------------//
-    //----------------------------------------------------------------//
 }
 
 // Event Handlers
 //--------------------------------------------------\\
+window.addEventListener('resize', () => {
+    resizeCanvas();
+    console.log('resized');
+});
+
 window.onkeydown = (event) => {
     // if could set a number to a tile, add it to value pile;
     if(map.clkdTileInfo?.tile == null) {
@@ -544,6 +590,7 @@ canvas.onclick = (event) => {
     const eX = event.offsetX,
           eY = event.offsetY;
     map.updateClickedTile(eX, eY);
+    console.log(eX + ", " + eY);
     mapRenderer.renderMap();
 }
 

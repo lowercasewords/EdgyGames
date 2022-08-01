@@ -1,0 +1,15 @@
+﻿#sudoku-game-field {
+    height: 100%;
+    width: 100%;
+}
+#sudoku-game-field > * {
+    float: left;
+}
+canvas#sudoku-canvas-map {
+    width:80%;
+    height:100%;
+}
+canvas#sudoku-canvas-options {
+    width:20%;
+    height: 100%
+}

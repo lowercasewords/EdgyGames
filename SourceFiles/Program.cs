@@ -19,7 +19,7 @@ namespace EdgyGames
             //try
             //{
             //    Console.WriteLine("Trying to Connect to database");
-            //    await mySqlConn.OpenAsync();
+            //    a wait mySqlConn.OpenAsync();
 
             //    Console.WriteLine(mySqlConn.Database);
             //}

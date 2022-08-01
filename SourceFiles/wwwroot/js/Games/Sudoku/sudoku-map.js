@@ -1,52 +1,31 @@
 ﻿import { CanvasObj, ColorCanvasObj } from '../CanvasBasics/canvas-helper.js'
 // NOTE: Coordinates in upper-left corner are (0, 0)! The y-axis is flipped! 
 // NOTE: Calls for starter map creation and rendering happens on the bottom
+
 const canvas = document.getElementById('sudoku-canvas-map');
 const ctx = canvas.getContext('2d');
 
+// Percentile chance of a single tile to be filled with deafult value
 let tileChance = 10;
 
-var map = new Map(canvas.width);
-const mapRenderer = new MapRenderer(map);
-
-map.createBoard();
-mapRenderer.renderMap();
-resizeCanvas();
-
-function resizeCanvas() {
-    canvas.height = canvas.offsetHeight;
-    canvas.width = canvas.offsetWidth;
-    console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
-    mapRenderer.renderMap();
-}
+let gridAmount = 3;
+let tileAmount = 3;
 /** Represents the single Sudoku Map! When game starts, map creates nXn 2d array of grids
  * and each one of them has nXn 2d array of tiles (n is a player specified size)
  * Each tile in the grids is filled with values to ensure a possible victory, some 
  * values are then deleted depending on the 'chance' variable
- * @param {Number} x position of this map on x-asis
- * @param {Number} y position of this map on y-axis (y-axis is 0 at the top/descends)
- * @param {Number} width width the map and its elements
- * @param {Number} gridAmount Amount of grids in a single map row and column
- * @param {Number} tileAmount Amount of tiles in a single grid row and column
  */
-function Map(width, gridAmount = 3, tileAmount = 3) {
-    // SingleTon
-    if(Map.INSTANCE) {
-        throw Error(`Cannot create more than one instance of ${this.constructor.call}`);
-    }
-    Map.INSTANCE = this;
+var map = new function () {
+    // Object.setPrototypeOf(this, )
+    this.gridAmount = parseInt(gridAmount);
+    this.tileAmount = parseInt(tileAmount);
 
-    this.gridAmount = gridAmount;
-    this.tileAmount = tileAmount;
-    this.width = width;
     /** 2d array of map grids */
     this.grids = [];
-    /** Physical width of each grid in pixels */
-    this.updatedGridWidth = function() {
-        return this.width / gridAmount;
-    };
-    this.gridWidth = this.updatedGridWidth();
-    /** Updates grid size and ALL ITS COMPONENTS */
+    /** Physical size of the game map */
+    this.size = canvas.width;
+    /** Physical size of each grid in pixels */
+    this.gridSize = null;
     /** Info about currently clicked tile */
     this.clkdTileInfo = {
         tile : null,
@@ -93,40 +72,54 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
     this.endGame = () => {
         // Do something
     }
+    
     /**
      * Initializes the grids and tiles of the map
      * @param {Number} gridAmount amount of grids
      * @param {Number} tileAmount amount of tiles 
      */
     this.createBoard = () => {
-        gridAmount = parseInt(gridAmount);
-        tileAmount = parseInt(tileAmount);
         ctx.lineWidth = 3;
-        for (let row = 0; row < gridAmount; row++) {
+        for (let row = 0; row < this.gridAmount; row++) {
             this.grids[row] = [];
-            for (let col = 0; col < gridAmount; col++) {
-                let grid = new Grid(this, tileAmount, row * this.gridWidth, col * this.gridWidth, this.gridWidth, row, col, 'null' , 'pink');
+            for (let col = 0; col < this.gridAmount; col++) {
+                let grid = new Grid(this, this.tileAmount, row * this.gridSize, col * this.gridSize, this.gridSize, row, col, 'null' , 'pink');
                 this.grids[row][col] = grid;
                 grid.createTiles();
             }
         }
     }
-    
+
+
+    // Size changing methods
+    //------------------------------------------\\
+    /** 
+     * Updates grid size and ALL ITS COMPONENTS,
+     * Self-executing
+     */
+     this.updatedGridSize = async function() {
+        this.gridSize = canvas.width / this.gridAmount;
+        for (let gridRow = 0; gridRow < this.grids.length; gridRow++) {
+            for (let gridCol = 0; gridCol < this.grids[gridRow].length; gridCol++) {
+                let grid = this.grids[gridRow][gridCol];
+                new Promise((resolve, reject) => grid.rescaleAsync(gridRow, gridCol));
+            }
+        }
+    }
     /**
-     * Scales the components to match the intended position on the canvas, 
+     * Asyncronously rescales the components to match the intended position on the canvas, 
      * usually done window on resize
      */
-    this.reScale = () => {
-        this.grids.forEach(_ => _.forEach(grid => {
-            for (let row = 0; row < gridAmount; row++) {
-                for (let col = 0; col < gridAmount; col++) {
-                    let grid = this.grids[row][col]; 
-                    grid.x = row * gridS;
-                }
-            }
-        }));
+     this.rescaleAsync = async () => {
+        if(this.grids == undefined) { 
+            return; 
+        }
+        this.updatedGridSize();
+        console.log('end of the scaling');
     }
-    
+    //------------------------------------------//
+
+
     // Value check methods
     //------------------------------------------------------------------------\\
     /** 
@@ -219,30 +212,52 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
     //------------------------------------------------------------------------//
 }
 
+// After map business
+//---------------------------------------------------\\
+const mapRenderer = new MapRenderer(map);
+
+map.createBoard();
+mapRenderer.renderMap();
+resizeCanvas();
+
+function resizeCanvas() {
+    canvas.height = canvas.offsetHeight;
+    canvas.width = canvas.offsetWidth;
+    console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
+    map.rescaleAsync();
+    mapRenderer.renderMap();
+}
+//---------------------------------------------------//
+
 /**
  * Creates a grid object connected to a map. Asigns values to the tiles
  * @param {Number} tileAmount An amount of tiles in this grid 
  * @param {Number} x x position of this obj (starts to the left)
  * @param {Number} y y position of this obj (starts on top)
- * @param {Number} gridWidth the width of this grid
+ * @param {Number} gridSize the size of this grid
  * (for example if tiles == 3 => grid is 3x3)
  * @param {NUmber} row A map row in which this grid exists
  * @param {NUmber} col A map col in which this grid exists
  * */
- function Grid(linkedMap, tileAmount, x, y, gridWidth, row, col, outlineColor, fillColor) {
-    Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(gridWidth), outlineColor, fillColor));
+ function Grid(linkedMap, tileAmount, x, y, gridSize, row, col, outlineColor, fillColor) {
+    Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(gridSize), outlineColor, fillColor));
     
     this.linkedMap = linkedMap;
-    this.gridWidth = parseInt(gridWidth);
-    this.x = x;
-    this.y = y;
+    this.gridSize = parseInt(gridSize);
     /** Tiles the current grid obj consists of */
     this.tiles = [];
-    this.tileWidth = (this.gridWidth / 3) - 1;
-    this.outlineColor = outlineColor;
-    this.fillColor = fillColor;
+    this.tileSize = (this.size / 3) - 1;
     this.row = row;
     this.col = col;
+    /**
+     * 
+     */
+    this.rescaleAsync = (tileRow, tileCol) => {
+        this.x = this.row * map.gridSize;
+        this.y = this.col * map.gridSize;
+        this.size = this.linkedMap.gridSize;
+        this.tiles[tileRow][tileCol].rescaleAsync(tileRow, tileCol);
+    }
     /** 
      * Populates the current grid obj with tile objs
      * */ 
@@ -250,7 +265,7 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
         for (let tileRow = 0; tileRow < tileAmount; tileRow++) {
             this.tiles[tileRow] = [];
             for (let tileCol = 0; tileCol < tileAmount; tileCol++) {
-                let tile = new Tile(this, x + (this.tileWidth * tileRow), y + (this.tileWidth * tileCol), this.tileWidth, tileRow, tileCol, 'black', '#F5F5F5');
+                let tile = new Tile(this, x + (this.tileSize * tileRow), y + (this.tileSize * tileCol), this.tileSize, tileRow, tileCol, 'black', '#F5F5F5');
                 this.tiles[tileRow][tileCol] = tile;
             }
         }
@@ -356,17 +371,24 @@ function Map(width, gridAmount = 3, tileAmount = 3) {
  * @param {any} linkedGrid a grid obj to link to
  * @param {Number} x position of the tile on x-axis
  * @param {Number} y position of the tile on y-axis (0 is at the top)
- * @param {Number} width width of this tile in pixels
+ * @param {Number} tileSize size of this tile in pixels
  * */
-function Tile(linkedGrid, x, y, width, row, col, outlineColor, fillColor) {
-    Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(width), outlineColor, fillColor));
+function Tile(linkedGrid, x, y, tileSize, row, col, outlineColor, fillColor) {
+    Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(tileSize), outlineColor, fillColor));
 
-    this.x = x;
-    this.y = y;
-    this.width = width;
     this.linkedGrid = linkedGrid;
     this.row = row;
     this.col = col;
+
+    this.rescaleAsync = async (tileRow, tileCol) => {
+        for (let tileRow = 0; tileRow < linkedGrid.tiles.size; tileRow++) {
+            for(let tileCol = 0; tileCol < linkedGrid.tiles[tileRow].length; tileCol++) {
+                this.x = tileRow * linkedGrid.x;
+                this.y = tileCol * linkedGrid.y;
+                this.size = linkedGrid.tileSize;
+            }
+        }
+    }
     /** Characters that could be a value */
     Tile.prototype.possibleValues = /[1-9]/;
 
@@ -593,7 +615,6 @@ canvas.onclick = (event) => {
     console.log(eX + ", " + eY);
     mapRenderer.renderMap();
 }
-
 //--------------------------------------------------//
 
 /**

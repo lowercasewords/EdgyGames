@@ -1,5 +1,6 @@
-import { CanvasObj, ColorCanvasObj } from '/js/canvas-helper.js'
+import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js';
 import { Tile } from '/js/Games/Sudoku/GameField/tile.js'
+import { map } from '/js/Games/Sudoku/GameField/main.js'
 /**
  * Creates a grid object connected to a sudoku map. Asigns values to the tiles
  * @param {Number} tileAmount An amount of tiles in this grid 
@@ -21,7 +22,7 @@ import { Tile } from '/js/Games/Sudoku/GameField/tile.js'
     this.row = row;
     this.col = col;
     /**
-     * 
+     * Recales one 
      */
     this.rescaleAsync = (tileRow, tileCol) => {
         this.x = this.row * map.gridSize;

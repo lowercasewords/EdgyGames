@@ -1,4 +1,4 @@
-import { CanvasObj, ColorCanvasObj } from '/js/Games/canvas-helper.js'
+import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
 
 /** 
  * Creates a tile linked to the grid
@@ -14,6 +14,11 @@ import { CanvasObj, ColorCanvasObj } from '/js/Games/canvas-helper.js'
     this.row = row;
     this.col = col;
 
+    /**
+     * Rescales one Tile
+     * @param {any} tileRow row of the tile
+     * @param {any} tileCol col of the tile
+     */
     this.rescaleAsync = async (tileRow, tileCol) => {
         for (let tileRow = 0; tileRow < linkedGrid.tiles.size; tileRow++) {
             for(let tileCol = 0; tileCol < linkedGrid.tiles[tileRow].length; tileCol++) {

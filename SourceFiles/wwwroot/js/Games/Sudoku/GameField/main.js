@@ -1,9 +1,10 @@
-﻿import { Grid } from '/js/Games/Sudoku/GameField/grid.js'
+﻿import { Grid } from '/js/Games/Sudoku/GameField/grid.js';
+import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
 // NOTE: Coordinates in upper-left corner are (0, 0)! The y-axis is flipped! 
 // NOTE: Calls for starter map creation and rendering happens on the bottom
 
 export const canvas = document.getElementById('sudoku-canvas-map');
-const ctx = canvas.getContext('2d');
+export const ctx = canvas.getContext('2d');
 
 // Percentile chance of a single tile to be filled with deafult value
 let tileChance = 10;
@@ -16,7 +17,7 @@ let tileAmount = 3;
  * Each tile in the grids is filled with values to ensure a possible victory, some 
  * values are then deleted depending on the 'chance' variable
  */
-export let sudokuMap = new function () {
+export const map = new function () {
     // Object.setPrototypeOf(this, )
     this.gridAmount = parseInt(gridAmount);
     this.tileAmount = parseInt(tileAmount);
@@ -41,9 +42,9 @@ export let sudokuMap = new function () {
      * @param {Number} y-coodrinate of the click
      */
     this.updateClickedTile = (clickX, clickY) => {
-        for (let gR = 0; gR < sudokuMap.grids.length; gR++) {
-            for (let gC = 0; gC < sudokuMap.grids[gR].length; gC++) {
-                let tiles = sudokuMap.grids[gR][gC].tiles;
+        for (let gR = 0; gR < map.grids.length; gR++) {
+            for (let gC = 0; gC < map.grids[gR].length; gC++) {
+                let tiles = map.grids[gR][gC].tiles;
                 for (let tR = 0; tR < tiles.length; tR++) {
                     for (let tC = 0; tC < tiles[tR].length; tC++) 
                     {
@@ -106,17 +107,6 @@ export let sudokuMap = new function () {
                 new Promise((resolve, reject) => grid.rescaleAsync(gridRow, gridCol));
             }
         }
-    }
-    /**
-     * Asyncronously rescales the components to match the intended position on the canvas, 
-     * usually done window on resize
-     */
-     this.rescaleAsync = async () => {
-        if(this.grids == undefined) { 
-            return; 
-        }
-        this.updatedGridSize();
-        console.log('end of the scaling');
     }
     //------------------------------------------//
 
@@ -215,17 +205,10 @@ export let sudokuMap = new function () {
 
 // After map business
 //---------------------------------------------------\\
-sudokuMap.createBoard();
+map.createBoard();
 mapRenderer.renderMap();
-resizeCanvas();
-
-function resizeCanvas() {
-    canvas.height = canvas.offsetHeight;
-    canvas.width = canvas.offsetWidth;
-    console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
-    sudokuMap.rescaleAsync();
-    mapRenderer.renderMap();
-}
+console.log('map should be rendered now');
+function rescale();
 //---------------------------------------------------//
 
 

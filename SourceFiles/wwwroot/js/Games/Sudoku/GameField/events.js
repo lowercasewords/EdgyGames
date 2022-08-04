@@ -1,9 +1,9 @@
-import { canvas, map } from "~js/Games/Sudoku/GameField/main.js"
-
+import { canvas, map } from '/js/Games/Sudoku/GameField/main.js';
+import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
 // Event Handlers
 //--------------------------------------------------\\
 window.addEventListener('resize', (event) => {
-    resizeCanvas();
+    resize(mapRenderer.resize(mapRenderer.rescaleAsync());
     console.log('resized');
 });
 

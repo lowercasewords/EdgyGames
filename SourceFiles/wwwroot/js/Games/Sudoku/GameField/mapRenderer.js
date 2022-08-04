@@ -1,8 +1,9 @@
-import { CanvasObj, ColorCanvasObj } from "~/js/Games/canvas-helper.js"
+import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
+import { map, ctx } from '/js/Games/Sudoku/GameField/main.js';
 /** 
  * Contains handle method to draw everything on the map!
  * */
-var mapRenderer = function () {
+export const mapRenderer = new function () {
     /** Renders the board up-to-date */
     this.renderMap = () => {
         // Render each grid and tile
@@ -19,6 +20,18 @@ var mapRenderer = function () {
                 );
             this.renderClickedTile();
         }
+    }
+    /**
+     * Asyncronously rescales the components to match the intended position on the canvas, 
+     * usually done window on resize
+     */
+    this.rescaleAsync = async () => {
+        if (map.grids == undefined) {
+            return;
+        }
+        console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
+        map.updatedGridSize();
+        console.log('end of the scaling');
     }
     /** 
      * Renders the grid with its tiles

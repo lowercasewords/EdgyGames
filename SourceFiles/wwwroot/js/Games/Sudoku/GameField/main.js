@@ -5,7 +5,8 @@ import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
 
 export const canvas = document.getElementById('sudoku-canvas-map');
 export const ctx = canvas.getContext('2d');
-
+ctx.fillStyle = 'green'
+ctx.fillRect(100, 100);
 // Percentile chance of a single tile to be filled with deafult value
 let tileChance = 10;
 
@@ -208,7 +209,7 @@ export const map = new function () {
 map.createBoard();
 mapRenderer.renderMap();
 console.log('map should be rendered now');
-function rescale();
+console.log(map)
 //---------------------------------------------------//
 
 

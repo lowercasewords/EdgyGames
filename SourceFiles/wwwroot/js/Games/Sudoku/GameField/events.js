@@ -1,10 +1,11 @@
 import { canvas, map } from '/js/Games/Sudoku/GameField/main.js';
 import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
+import { resize } from '/js/Games/canvasHelper.js';
+
 // Event Handlers
 //--------------------------------------------------\\
 window.addEventListener('resize', (event) => {
-    resize(mapRenderer.resize(mapRenderer.rescaleAsync());
-    console.log('resized');
+    resize(canvas, mapRenderer.rescaleAsync);
 });
 
 window.onkeydown = (event) => {
@@ -13,7 +14,7 @@ window.onkeydown = (event) => {
         return;
     }
     let clickedGrid = map.grids[map.clkdTileInfo.gR][map.clkdTileInfo.gC];
-    // tries to set the players value to the tile
+     //tries to set the players value to the tile
     if(Tile.prototype.possibleValues.test(event.key) 
         && clickedGrid.setTileValue(map.clkdTileInfo.tR, map.clkdTileInfo.tC, event.key)) 
     {
@@ -81,3 +82,4 @@ canvas.onclick = (event) => {
     console.log(eX + ", " + eY);
     mapRenderer.renderMap();
 }
+//--------------------------------------------------\\

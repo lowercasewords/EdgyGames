@@ -56,11 +56,12 @@ export class ColorCanvasObj extends CanvasObj{
 
 /**
  * Resizes the canvas according
+ * @oaram {Object} canvas the canvas to manipulate
  * @param {funciton} rescale callback to rescale the canvas map
  */
-export function resize(rescale) {
+export function resize(canvas, rescale) {
     canvas.height = canvas.offsetHeight;
     canvas.width = canvas.offsetWidth;
     rescale();
-    console.log("resize done");
+    console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
 }

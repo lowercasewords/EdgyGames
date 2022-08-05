@@ -29,9 +29,7 @@ export const mapRenderer = new function () {
         if (map.grids == undefined) {
             return;
         }
-        console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
         map.updatedGridSize();
-        console.log('end of the scaling');
     }
     /** 
      * Renders the grid with its tiles

@@ -5,8 +5,7 @@ import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
 
 export const canvas = document.getElementById('sudoku-canvas-map');
 export const ctx = canvas.getContext('2d');
-ctx.fillStyle = 'green'
-ctx.fillRect(100, 100);
+
 // Percentile chance of a single tile to be filled with deafult value
 let tileChance = 10;
 
@@ -28,7 +27,7 @@ export const map = new function () {
     /** Physical size of the game map */
     this.size = canvas.width;
     /** Physical size of each grid in pixels */
-    this.gridSize = null;
+    this.gridSize = canvas.width / gridAmount - 1;
     /** Info about currently clicked tile */
     this.clkdTileInfo = {
         tile : null,
@@ -82,7 +81,7 @@ export const map = new function () {
      * @param {Number} tileAmount amount of tiles 
      */
     this.createBoard = () => {
-        ctx.lineWidth = 3;
+        // ctx.lineWidth = 3;
         for (let row = 0; row < this.gridAmount; row++) {
             this.grids[row] = [];
             for (let col = 0; col < this.gridAmount; col++) {
@@ -100,7 +99,7 @@ export const map = new function () {
      * Updates grid size and ALL ITS COMPONENTS,
      * Self-executing
      */
-     this.updatedGridSize = async function() {
+     this.updateGridSize = async function() {
         this.gridSize = canvas.width / this.gridAmount;
         for (let gridRow = 0; gridRow < this.grids.length; gridRow++) {
             for (let gridCol = 0; gridCol < this.grids[gridRow].length; gridCol++) {
@@ -209,7 +208,7 @@ export const map = new function () {
 map.createBoard();
 mapRenderer.renderMap();
 console.log('map should be rendered now');
-console.log(map)
+console.log(map);
 //---------------------------------------------------//
 
 

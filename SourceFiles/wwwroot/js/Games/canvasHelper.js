@@ -38,6 +38,11 @@ export class ColorCanvasObj extends CanvasObj{
         this.fillColor = fillColor;
         this.outlineColor = outlineColor;
         this.lineWidth = 5;
+        /**
+         * Fills up the current canvas object with color
+         * @param {Object} context the context to paint with
+         * @param {String} color the color of the fill
+         */
         this.fill = (context, color = this.fillColor) => {
             context.fillStyle = color;
             context.fillRect(this.x, this.y, this.width, this.width);

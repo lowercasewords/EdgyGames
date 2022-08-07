@@ -16,17 +16,15 @@ import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
 
     /**
      * Rescales one Tile
-     * @param {any} tileRow row of the tile
-     * @param {any} tileCol col of the tile
      */
-    this.rescaleAsync = async (tileRow, tileCol) => {
-        for (let tileRow = 0; tileRow < linkedGrid.tiles.size; tileRow++) {
-            for(let tileCol = 0; tileCol < linkedGrid.tiles[tileRow].length; tileCol++) {
-                this.x = tileRow * linkedGrid.x;
-                this.y = tileCol * linkedGrid.y;
+    this.rescaleAsync = async () => {
+        // for (let tileRow = 0; tileRow < linkedGrid.tiles.size; tileRow++) {
+        //     for(let tileCol = 0; tileCol < linkedGrid.tiles[tileRow].length; tileCol++) {
+                this.x = this.row * linkedGrid.x;
+                this.y = this.col * linkedGrid.y;
                 this.size = linkedGrid.tileSize;
-            }
-        }
+        //     }
+        // }
     }
     /** Characters that could be a value */
     Tile.prototype.possibleValues = /[1-9]/;

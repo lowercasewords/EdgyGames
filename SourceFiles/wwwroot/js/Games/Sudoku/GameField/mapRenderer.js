@@ -6,6 +6,9 @@ import { map, ctx } from '/js/Games/Sudoku/GameField/main.js';
 export const mapRenderer = new function () {
     /** Renders the board up-to-date */
     this.renderMap = () => {
+        ctx.lineWidth = 15;
+        ctx.fillStyle = 'green';
+        ctx.fillRect(100, 100, 100, 100);
         // Render each grid and tile
         map.grids.forEach(_ => _.forEach(grid => {
             this.renderGrid(grid);
@@ -20,36 +23,34 @@ export const mapRenderer = new function () {
                 );
             this.renderClickedTile();
         }
+        console.log("map rendererd")
     }
     /**
      * Asyncronously rescales the components to match the intended position on the canvas, 
      * usually done window on resize
      */
-    this.rescaleAsync = async () => {
-        if (map.grids == undefined) {
-            return;
-        }
-        map.updatedGridSize();
+    this.rescaleAsync =  () => {
+        map.updateGridSize();
+        this.renderMap();
     }
     /** 
      * Renders the grid with its tiles
      * @param {Grid} grid Grid to render
      */
     this.renderGrid = (grid) => {
-        grid.outline(ctx, null);
+        ctx.lineWidth = 15;
+        grid.fill(ctx, 'red');
         grid.tiles.forEach(_ => _.forEach(tile => {
             this.renderTile(tile);
         }));
     }
-    // Methods for rendering tiles
-    //----------------------------------------------------------------\\
     /**
      * Renders individual tile
      * @param {Tile} tile tile to render
      */
     this.renderTile = (tile) => {
         tile.outline(ctx);
-        tile.fill(ctx)
+        tile.fill(ctx, 'green')
         this.renderTileValue(tile);
     }
     /**
@@ -117,5 +118,4 @@ export const mapRenderer = new function () {
             }
         }
     }
-    //----------------------------------------------------------------//
 }

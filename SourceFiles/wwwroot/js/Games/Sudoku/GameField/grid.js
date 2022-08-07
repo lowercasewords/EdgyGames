@@ -11,24 +11,24 @@ import { map } from '/js/Games/Sudoku/GameField/main.js'
  * @param {NUmber} row A map row in which this grid exists
  * @param {NUmber} col A map col in which this grid exists
  * */
- export function Grid(linkedMap, tileAmount, x, y, gridSize, row, col, outlineColor, fillColor) {
+ export function Grid(linkedMap, tileAmount, x, y, gridSize, row, col, outlineColor = null, fillColor = null) {
     Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(gridSize), outlineColor, fillColor));
     
-    this.linkedMap = linkedMap;
-    this.gridSize = parseInt(gridSize);
-    /** Tiles the current grid obj consists of */
-    this.tiles = [];
-    this.tileSize = (this.size / 3) - 1;
     this.row = row;
     this.col = col;
+    this.linkedMap = linkedMap;
+    this.gridSize = gridSize;
+    this.tileSize = this.gridSize / map.tileAmount - 1;
+    /** Tiles the current grid obj consists of */
+    this.tiles = [];
     /**
-     * Recales one 
+     * Recales the current grid
      */
     this.rescaleAsync = (tileRow, tileCol) => {
         this.x = this.row * map.gridSize;
         this.y = this.col * map.gridSize;
         this.size = this.linkedMap.gridSize;
-        this.tiles[tileRow][tileCol].rescaleAsync(tileRow, tileCol);
+        this.tiles[tileRow][tileCol].rescaleAsync();
     }
     /** 
      * Populates the current grid obj with tile objs
@@ -91,7 +91,6 @@ import { map } from '/js/Games/Sudoku/GameField/main.js'
                 }
                 else { 
                     console.log(`passed value at [${this.row}, ${this.col}] {${tileRow}, ${tileCol}}`);
-
                 }
                 // linkedMap.setTileValue(this.row, this.col, tileRow, tileCol, randInt(9) + 1);
             }

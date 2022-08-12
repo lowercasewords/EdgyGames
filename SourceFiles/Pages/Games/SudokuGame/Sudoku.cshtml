@@ -2,12 +2,19 @@
 @model EdgyGames.Pages.Games.SudokuModel
 @section Imports {
     <link href="~/css/sudoku.css" rel="stylesheet" />
-    <script src="~/js/sudoku.js"></script>
+    @* <script type="module" src="~/js/Games/canvasHelper.js"></script> *@
+    <script type="module" src="~/js/Games/Sudoku/GameField/grid.js"></script>
+    <script type="module" src="~/js/Games/Sudoku/GameField/tile.js"></script>
+    <script type="module" src="~/js/Games/Sudoku/GameField/main.js"></script>
+    <script type="module" src="~/js/Games/Sudoku/GameField/mapRenderer.js"></script>
+    <script type="module" src="~/js/Games/Sudoku/GameField/events.js"></script>
+    <script type="module" src="~/js/Games/Sudoku/options.js"></script>
 }
 @{
     ViewData["Title"] = "-Sudoku-";
     Layout = "_GamePageLayout";
 }
 <div id="sudoku-game-field">
-    <canvas id="sudoku-canvas"></canvas>
+    <canvas id="sudoku-canvas-map"></canvas>
+    <canvas id="sudoku-canvas-options"></canvas>
 </div>

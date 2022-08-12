@@ -1,9 +1,10 @@
-﻿import { Grid } from '/js/Games/Sudoku/GameField/grid.js'
+﻿import { Grid } from '/js/Games/Sudoku/GameField/grid.js';
+import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
 // NOTE: Coordinates in upper-left corner are (0, 0)! The y-axis is flipped! 
-// NOTE: Calls for starter map creation and rendering happens on the bottom
+// NOTE: Calls for starter gameInfo creation and rendering happens on the bottom
 
 export const canvas = document.getElementById('sudoku-canvas-map');
-const ctx = canvas.getContext('2d');
+export const ctx = canvas.getContext('2d');
 
 // Percentile chance of a single tile to be filled with deafult value
 let tileChance = 10;
@@ -11,19 +12,19 @@ let tileChance = 10;
 let gridAmount = 3;
 let tileAmount = 3;
 
-/** Represents the single Sudoku Map! When game starts, map creates nXn 2d array of grids
+/** Represents the single Sudoku Map! When game starts, gameInfo creates nXn 2d array of grids
  * and each one of them has nXn 2d array of tiles (n is a player specified size)
  * Each tile in the grids is filled with values to ensure a possible victory, some 
  * values are then deleted depending on the 'chance' variable
  */
-export let sudokuMap = new function () {
+export const gameInfo = new function () {
     // Object.setPrototypeOf(this, )
-    this.gridAmount = parseInt(gridAmount);
-    this.tileAmount = parseInt(tileAmount);
+    this.gridAmount = 3;
+    this.tileAmount = 3;
 
-    /** 2d array of map grids */
+    /** 2d array of gameInfo grids */
     this.grids = [];
-    /** Physical size of the game map */
+    /** Physical size of the game gameInfo */
     this.size = canvas.width;
     /** Physical size of each grid in pixels */
     this.gridSize = null;
@@ -35,15 +36,66 @@ export let sudokuMap = new function () {
         tC : null,
         tR : null 
     }
+    
+    this.startGame = (gridAmount = 3, tileAmount = 3) => {
+        this.gridAmount = gridAmount;
+        this.tileAmount = tileAmount;
+        createBoard();
+        mapRenderer.renderMap();
+    }
+    this.endGame = () => {
+        throw new Error('Nothing was implemented yet!');
+    }
+    /**
+     * Initializes the grids and tiles of the gameInfo
+     * @param {Number} gridAmount amount of grids
+     * @param {Number} tileAmount amount of tiles 
+     */
+    function createBoard() {
+        // ctx.lineWidth = 3;
+        updateSize();
+        for (let row = 0; row < gameInfo.gridAmount; row++) {
+            gameInfo.grids[row] = [];
+            for (let col = 0; col < gameInfo.gridAmount; col++) {
+                let grid = new Grid(gameInfo.tileAmount, row * gameInfo.gridSize, col * gameInfo.gridSize, this.gridSize, row, col, 'null' , 'pink');
+                gameInfo.grids[row][col] = grid;
+                grid.createTiles();
+            }
+        }
+    }
+    
+    /**
+     * Rescales the size of the gameInfo an its components to fit the canvas
+     */
+    this.rescaleAsync = () => {
+        updateSize();
+        for (let gridRow = 0; gridRow < this.grids.length; gridRow++) {
+            for (let gridCol = 0; gridCol < this.grids[gridRow].length; gridCol++) {
+                let grid = this.grids[gridRow][gridCol];
+                // new Promise((resolve, reject) => 
+                grid.rescaleAsync(gridRow, gridCol)
+                // );
+            }
+        }
+    }
+    // Update methods
+    //------------------------------------------\\
+    /** 
+     * Updates grid size and ALL ITS COMPONENTS
+     */
+    function updateSize() {
+        gameInfo.gridSize = canvas.width / gameInfo.gridAmount - 1;
+    }
+    
     /**
      * Updates the clicked tile object 
      * @param {Number} x-coordinate of the click
      * @param {Number} y-coodrinate of the click
      */
-    this.updateClickedTile = (clickX, clickY) => {
-        for (let gR = 0; gR < sudokuMap.grids.length; gR++) {
-            for (let gC = 0; gC < sudokuMap.grids[gR].length; gC++) {
-                let tiles = sudokuMap.grids[gR][gC].tiles;
+     this.updateClickedTile = (clickX, clickY) => {
+        for (let gR = 0; gR < gameInfo.grids.length; gR++) {
+            for (let gC = 0; gC < gameInfo.grids[gR].length; gC++) {
+                let tiles = gameInfo.grids[gR][gC].tiles;
                 for (let tR = 0; tR < tiles.length; tR++) {
                     for (let tC = 0; tC < tiles[tR].length; tC++) 
                     {
@@ -66,65 +118,13 @@ export let sudokuMap = new function () {
         this.clkdTileInfo.gC = null;
         this.clkdTileInfo.tR = null;
     }
-
-    this.startGame = () => {
-        this.createBoard();
-    }
-    this.endGame = () => {
-        // Do something
-    }
-    
-    /**
-     * Initializes the grids and tiles of the map
-     * @param {Number} gridAmount amount of grids
-     * @param {Number} tileAmount amount of tiles 
-     */
-    this.createBoard = () => {
-        ctx.lineWidth = 3;
-        for (let row = 0; row < this.gridAmount; row++) {
-            this.grids[row] = [];
-            for (let col = 0; col < this.gridAmount; col++) {
-                let grid = new Grid(this, this.tileAmount, row * this.gridSize, col * this.gridSize, this.gridSize, row, col, 'null' , 'pink');
-                this.grids[row][col] = grid;
-                grid.createTiles();
-            }
-        }
-    }
-
-
-    // Size changing methods
-    //------------------------------------------\\
-    /** 
-     * Updates grid size and ALL ITS COMPONENTS,
-     * Self-executing
-     */
-     this.updatedGridSize = async function() {
-        this.gridSize = canvas.width / this.gridAmount;
-        for (let gridRow = 0; gridRow < this.grids.length; gridRow++) {
-            for (let gridCol = 0; gridCol < this.grids[gridRow].length; gridCol++) {
-                let grid = this.grids[gridRow][gridCol];
-                new Promise((resolve, reject) => grid.rescaleAsync(gridRow, gridCol));
-            }
-        }
-    }
-    /**
-     * Asyncronously rescales the components to match the intended position on the canvas, 
-     * usually done window on resize
-     */
-     this.rescaleAsync = async () => {
-        if(this.grids == undefined) { 
-            return; 
-        }
-        this.updatedGridSize();
-        console.log('end of the scaling');
-    }
     //------------------------------------------//
 
 
     // Value check methods
     //------------------------------------------------------------------------\\
     /** 
-     * Checks whether or not the value is not repeating accross the map or inside of its grid
+     * Checks whether or not the value is not repeating accross the gameInfo or inside of its grid
      * @param {Number} baseGR The grid row of the tile
      * @param {Number} baseGC The grid column of the tile
      * @param {Number} baseGR The tile row of the tile
@@ -148,7 +148,6 @@ export let sudokuMap = new function () {
      * @returns Whether or not the value is unique horizontally
      */
     function checkValuesHoriz(grids, baseGR, baseGC, baseTR, baseTC, value) {
-        console.log('horizontally')
         return new Promise((resolve, rejected) => {
             // Horizontal Check
             for (let checkGR = 0; checkGR < grids.length; checkGR++) {
@@ -213,22 +212,7 @@ export let sudokuMap = new function () {
     //------------------------------------------------------------------------//
 }
 
-// After map business
-//---------------------------------------------------\\
-sudokuMap.createBoard();
-mapRenderer.renderMap();
-resizeCanvas();
-
-function resizeCanvas() {
-    canvas.height = canvas.offsetHeight;
-    canvas.width = canvas.offsetWidth;
-    console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
-    sudokuMap.rescaleAsync();
-    mapRenderer.renderMap();
-}
-//---------------------------------------------------//
-
-
+console.debug(gameInfo)
 /**
  *  @param {any} n Max number for the range (excluded)
  *  @return {Number} Returns random integer from 0 to n (excluded)

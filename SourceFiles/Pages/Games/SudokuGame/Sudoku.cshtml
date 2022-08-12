@@ -2,11 +2,12 @@
 @model EdgyGames.Pages.Games.SudokuModel
 @section Imports {
     <link href="~/css/sudoku.css" rel="stylesheet" />
-    <script type="module" src="~/js/Games/Sudoku/GameField/events.js"></script>
+    @* <script type="module" src="~/js/Games/canvasHelper.js"></script> *@
     <script type="module" src="~/js/Games/Sudoku/GameField/grid.js"></script>
+    <script type="module" src="~/js/Games/Sudoku/GameField/tile.js"></script>
     <script type="module" src="~/js/Games/Sudoku/GameField/main.js"></script>
     <script type="module" src="~/js/Games/Sudoku/GameField/mapRenderer.js"></script>
-    <script type="module" src="~/js/Games/Sudoku/GameField/tile.js"></script>
+    <script type="module" src="~/js/Games/Sudoku/GameField/events.js"></script>
     <script type="module" src="~/js/Games/Sudoku/options.js"></script>
 }
 @{

@@ -1,36 +1,33 @@
 import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
-import { map, ctx } from '/js/Games/Sudoku/GameField/main.js';
+import { gameInfo, ctx } from '/js/Games/Sudoku/GameField/main.js';
 /** 
- * Contains handle method to draw everything on the map!
+ * Contains handle method to draw everything on the gameInfo!
  * */
 export const mapRenderer = new function () {
     /** Renders the board up-to-date */
     this.renderMap = () => {
-        ctx.lineWidth = 15;
-        ctx.fillStyle = 'green';
-        ctx.fillRect(100, 100, 100, 100);
         // Render each grid and tile
-        map.grids.forEach(_ => _.forEach(grid => {
+        gameInfo.grids.forEach(_ => _.forEach(grid => {
             this.renderGrid(grid);
         }));
         // Render selection
-        if(map.clkdTileInfo != null) {
+        if(gameInfo.clkdTileInfo != null) {
             this.rendrerCrossTiles(
-                map.clkdTileInfo.gR, 
-                map.clkdTileInfo.gC, 
-                map.clkdTileInfo.tR,
-                map.clkdTileInfo.tC
+                gameInfo.clkdTileInfo.gR, 
+                gameInfo.clkdTileInfo.gC, 
+                gameInfo.clkdTileInfo.tR,
+                gameInfo.clkdTileInfo.tC
                 );
             this.renderClickedTile();
         }
-        console.log("map rendererd")
+        console.log("gameInfo rendererd")
     }
     /**
      * Asyncronously rescales the components to match the intended position on the canvas, 
      * usually done window on resize
      */
-    this.rescaleAsync =  () => {
-        map.updateGridSize();
+    this.rescaleAsync = () => {
+        gameInfo.rescaleAsync();
         this.renderMap();
     }
     /** 
@@ -38,8 +35,6 @@ export const mapRenderer = new function () {
      * @param {Grid} grid Grid to render
      */
     this.renderGrid = (grid) => {
-        ctx.lineWidth = 15;
-        grid.fill(ctx, 'red');
         grid.tiles.forEach(_ => _.forEach(tile => {
             this.renderTile(tile);
         }));
@@ -49,8 +44,9 @@ export const mapRenderer = new function () {
      * @param {Tile} tile tile to render
      */
     this.renderTile = (tile) => {
-        tile.outline(ctx);
-        tile.fill(ctx, 'green')
+        ctx.lineWidth = 15;
+        tile.outline(ctx, 'black');
+        tile.fill(ctx, 'blue')
         this.renderTileValue(tile);
     }
     /**
@@ -73,10 +69,10 @@ export const mapRenderer = new function () {
      * Renderes the selected tile with the value
      * */
     this.renderClickedTile = () => {
-        if(map.clkdTileInfo.tile == null) {
+        if(gameInfo.clkdTileInfo.tile == null) {
             return;
         }
-        let clickedTile = map.clkdTileInfo.tile;
+        let clickedTile = gameInfo.clkdTileInfo.tile;
         clickedTile.outline(ctx, null);
         clickedTile.fill(ctx, 'blue');
         this.renderTileValue(clickedTile);
@@ -92,12 +88,12 @@ export const mapRenderer = new function () {
         function highlightTile(tile) {
             tile.fill(ctx, '#e3e3c7');
         }
-        for (let currGR = 0; currGR < map.grids.length; currGR++) {
-            for (let currGC = 0; currGC < map.grids[currGR].length; currGC++) {
+        for (let currGR = 0; currGR < gameInfo.grids.length; currGR++) {
+            for (let currGC = 0; currGC < gameInfo.grids[currGR].length; currGC++) {
                 if(currGR != baseGR && currGC != baseGC) {
                         continue;
                     } 
-                let grid = map.grids[currGR][currGC];
+                let grid = gameInfo.grids[currGR][currGC];
                 let isBaseGrid = currGR == baseGR && currGC == baseGC;
 
                 // if found a grid, try do its tiles:
@@ -119,3 +115,4 @@ export const mapRenderer = new function () {
         }
     }
 }
+Object.freeze(mapRenderer);

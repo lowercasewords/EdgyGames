@@ -60,9 +60,9 @@ export class ColorCanvasObj extends CanvasObj{
 }
 
 /**
- * Resizes the canvas according
+ * Resizes the canvas according to the window
  * @oaram {Object} canvas the canvas to manipulate
- * @param {funciton} rescale callback to rescale the canvas map
+ * @param {funciton} rescale callback to rescale the canvas gameInfo
  */
 export function resize(canvas, rescale) {
     canvas.height = canvas.offsetHeight;

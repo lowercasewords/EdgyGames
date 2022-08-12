@@ -3,23 +3,18 @@ import { Tile } from '/js/Games/Sudoku/GameField/tile.js'
 import { gameInfo } from '/js/Games/Sudoku/GameField/main.js'
  /**
  * Creates a grid object connected to a sudoku gameInfo. Asigns values to the tiles
- * @param {Number} tileAmount An amount of tiles in this grid
  * @param {Number} x x position of this obj (starts to the left)
  * @param {Number} y y position of this obj (starts on top)
  * @param {Number} gridSize the size of this grid
  * (for example if tiles == 3 => grid is 3x3)
- * @param {NUmber} row A gameInfo row in which this grid exists
- * @param {NUmber} col A gameInfo col in which this grid exists
+ * @param {Number} row A gameInfo row in which this grid exists
+ * @param {Number} col A gameInfo col in which this grid exists
+ * @param {String} outlineColor optional outline color
+ * @param {String} fillColor optional fill color
  * */
-export class Grid {
-    static tileSize;
-    static updateTileSize = () => Grid.tileSize = this.gridSize / gameInfo.tileAmount - 1; ;
-
-    constructor(tileAmount, x, y, gridSize, row, col, outlineColor = null, fillColor = null) {
-        Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(gridSize), outlineColor, fillColor));
-
-        Grid.updateTileSize();
-        
+export class Grid extends ColorCanvasObj{
+    constructor(x, y, gridSize, row, col, outlineColor = null, fillColor = null) {
+        super(parseInt(x), parseInt(y), parseInt(gridSize), outlineColor, fillColor);
         this.row = row;
         this.col = col;
         this.gridSize = gridSize;
@@ -34,10 +29,10 @@ export class Grid {
      * */
     createTiles = () => {
         Grid.updateTileSize();
-        for (let tileRow = 0; tileRow < tileAmount; tileRow++) {
+        for (let tileRow = 0; tileRow < gameInfo.tileAmount; tileRow++) {
             this.tiles[tileRow] = [];
-            for (let tileCol = 0; tileCol < tileAmount; tileCol++) {
-                let tile = new Tile(this, x + (Grid.tileSize * tileRow), y + (Grid.tileSize * tileCol), Grid.tileSize, tileRow, tileCol, 'black', '#F5F5F5');
+            for (let tileCol = 0; tileCol < gameInfo.tileAmount; tileCol++) {
+                let tile = new Tile(this, x + (Grid.tileSize * tileRow), y + (Grid.tileSize * tileCol), tileRow, tileCol, 'black', '#F5F5F5');
                 this.tiles[tileRow][tileCol] = tile;
             }
         }
@@ -47,10 +42,10 @@ export class Grid {
      */
      rescaleAsync = (tileRow, tileCol) => {
         // console.log(`before: ${proto.x}, ${proto.y}: ${proto.size}`);
-        Grid.prototype.x = this.row * gameInfo.gridSize;
-        Grid.prototype.y = this.col * gameInfo.gridSize;
-        Grid.prototype.size = gameInfo.gridSize;
-        Grid.updateTileSize();
+        this.x = this.row * gameInfo.gridSize;
+        this.y = this.col * gameInfo.gridSize;
+        this.size = gameInfo.gridSize;
+        gameInfo.updateTileSize();
         // console.log(`after: ${proto.x}, ${proto.y}: ${proto.size}`);
         // console.log(`in prototype: ${p.x}, ${p.y}: ${p.size}`);
         this.tiles[tileRow][tileCol].rescaleAsync();

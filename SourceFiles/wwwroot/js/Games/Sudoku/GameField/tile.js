@@ -14,7 +14,7 @@ import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
  * @param {Number} y position of the tile on y-axis (0 is at the top)
  * @param {Number} tileSize size of this tile in pixels
  * */
-export class Tile {
+export class Tile extends ColorCanvasObj{
     /**
      * Rescales one Tile
      */
@@ -39,17 +39,16 @@ export class Tile {
     }
     /** Characters that could be a value */
     static possibleValues = /[1-9]/;
-    
-    constructor(linkedGrid, x, y, tileSize, row, col, outlineColor, fillColor) {
-        Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(tileSize), outlineColor, fillColor));
 
+    constructor(linkedGrid, x, y, row, col, outlineColor, fillColor) {
+        super(parseInt(x), parseInt(y), parseInt(tileSize), outlineColor, fillColor);
         this.linkedGrid = linkedGrid;
         this.row = row;
         this.col = col;
-
+        
         // Configuring the value object of this tile
         //--------------------------------------------------------------------------------\\
-        this.valueHolder = {
+        this.value = {
             /** Value of the current tile */
             value: null,
         };

@@ -13,11 +13,11 @@ import { gameInfo } from '/js/Games/Sudoku/GameField/main.js'
  * @param {String} fillColor optional fill color
  * */
 export class Grid extends ColorCanvasObj{
-    constructor(x, y, gridSize, row, col, outlineColor = null, fillColor = null) {
-        super(parseInt(x), parseInt(y), parseInt(gridSize), outlineColor, fillColor);
+    constructor(x, y, row, col, outlineColor = null, fillColor = null) {
+        super(parseInt(x), parseInt(y), parseInt(gameInfo.gridSize), outlineColor, fillColor);
         this.row = row;
         this.col = col;
-        this.gridSize = gridSize;
+        this.size = gameInfo.gridSize;
         /** Tiles the current grid obj consists of */
         this.tiles = [];
         
@@ -26,13 +26,12 @@ export class Grid extends ColorCanvasObj{
     
     /**
      * Populates the current grid obj with tile objs
-     * */
+     */
     createTiles = () => {
-        Grid.updateTileSize();
         for (let tileRow = 0; tileRow < gameInfo.tileAmount; tileRow++) {
             this.tiles[tileRow] = [];
             for (let tileCol = 0; tileCol < gameInfo.tileAmount; tileCol++) {
-                let tile = new Tile(this, x + (Grid.tileSize * tileRow), y + (Grid.tileSize * tileCol), tileRow, tileCol, 'black', '#F5F5F5');
+                let tile = new Tile(this, this.x + (gameInfo.tileSize * tileRow), this.y + (gameInfo.tileSize * tileCol), tileRow, tileCol);
                 this.tiles[tileRow][tileCol] = tile;
             }
         }
@@ -40,15 +39,22 @@ export class Grid extends ColorCanvasObj{
     /**
      * Recales the current grid
      */
-     rescaleAsync = (tileRow, tileCol) => {
+     rescaleAsync = async () => {
         // console.log(`before: ${proto.x}, ${proto.y}: ${proto.size}`);
         this.x = this.row * gameInfo.gridSize;
         this.y = this.col * gameInfo.gridSize;
         this.size = gameInfo.gridSize;
-        gameInfo.updateTileSize();
         // console.log(`after: ${proto.x}, ${proto.y}: ${proto.size}`);
         // console.log(`in prototype: ${p.x}, ${p.y}: ${p.size}`);
-        this.tiles[tileRow][tileCol].rescaleAsync();
+        let promises = [];
+        this.tiles.forEach(_ => _.forEach(tile => {
+            promises.push(new Promise((resolve, reject) => 
+            {
+                tile.rescaleTile();
+                resolve();
+            }));
+        }))
+        await Promise.all(promises);
     };
 
     /**
@@ -73,9 +79,9 @@ export class Grid extends ColorCanvasObj{
                     // }
                     let tile = this.tiles[checkTR][checkTC];
 
-                    console.log(`comparing existing ${tile.valueHolder.value} to ${value}`);
+                    console.log(`comparing existing ${tile.value} to ${value}`);
                     // Found a repetitive value
-                    if (tile.valueHolder.value == value && tile != null) {
+                    if (tile.value == value && tile != null) {
                         console.log(`found a in-same-grid repeat ${value} at [${this.row}, ${this.col}] {${checkTR}, ${checkTC}}`);
                         resolve(false);
                         return;
@@ -124,7 +130,7 @@ export class Grid extends ColorCanvasObj{
             }
         }
         console.log(`value ${value} is set`);
-        this.tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
+        this.tiles[baseTR][baseTC].value = value?.toString().substring(0, 1);
         return true;
     };
     /**
@@ -140,7 +146,7 @@ export class Grid extends ColorCanvasObj{
         if (!this.gameInfo.checkValue(this.row, this.col, baseTR, baseTC, value)) {
             return false;
         }
-        this.tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
+        this.tiles[baseTR][baseTC].value = value?.toString().substring(0, 1);
         return true;
     };
 }

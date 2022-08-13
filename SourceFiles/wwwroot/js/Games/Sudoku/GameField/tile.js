@@ -1,3 +1,4 @@
+import { gameInfo } from './main.js';
 import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
 
 /** 
@@ -18,10 +19,10 @@ export class Tile extends ColorCanvasObj{
     /**
      * Rescales one Tile
      */
-    rescaleAsync = async () => {
-        this.x = this.row * linkedGrid.x;
-        this.y = this.col * linkedGrid.y;
-        this.size = linkedGrid.tileSize;
+    rescaleTile = () => {
+        this.x = this.row * this.linkedGrid.x;
+        this.y = this.col * this.linkedGrid.y;
+        this.size = gameInfo.tileSize;
     };
      /**
      * Has a chance of setting a random value to the tile
@@ -33,30 +34,26 @@ export class Tile extends ColorCanvasObj{
             let value = randInt(9) + 1;
             if (this.linkedGrid.checkValue(this.row, this.col, tile.row, tile.col, value)) {
                 tile.valueHolder.value = value;
-                Object.freeze(tile.valueHolder);
             }
         }
     }
     /** Characters that could be a value */
     static possibleValues = /[1-9]/;
-
+    get value() {
+        return this.valueHolder.value;
+    }
     constructor(linkedGrid, x, y, row, col, outlineColor, fillColor) {
-        super(parseInt(x), parseInt(y), parseInt(tileSize), outlineColor, fillColor);
+        super(parseInt(x), parseInt(y), parseInt(gameInfo.tileSize), outlineColor, fillColor);
         this.linkedGrid = linkedGrid;
         this.row = row;
         this.col = col;
-        
+        this.size = gameInfo.tileSize;
+
         // Configuring the value object of this tile
         //--------------------------------------------------------------------------------\\
-        this.value = {
-            /** Value of the current tile */
-            value: null,
-        };
-        Object.setPrototypeOf(this.valueHolder, new ColorCanvasObj(x + 15, y + 30, this.width, 'null', 'null'));
-        // this.valueHolder.fill(ctx, 'red')
+        this.valueHolder = new ColorCanvasObj(x + 15, y + 30, this.width) 
+        /** Value of the current tile */
+        this.valueHolder.value = null;
         //--------------------------------------------------------------------------------//
-        this.getValue = () => {
-            return this.valueHolder.value;
-        };
     }
 }

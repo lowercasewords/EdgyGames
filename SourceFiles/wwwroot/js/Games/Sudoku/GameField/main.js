@@ -1,4 +1,5 @@
 ﻿import { Grid } from '/js/Games/Sudoku/GameField/grid.js';
+import { Tile } from '/js/Games/Sudoku/GameField/tile.js';
 import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
 // NOTE: Coordinates in upper-left corner are (0, 0)! The y-axis is flipped! 
 // NOTE: Calls for starter gameInfo creation and rendering happens on the bottom
@@ -17,33 +18,38 @@ let tileAmount = 3;
  * Each tile in the grids is filled with values to ensure a possible victory, some 
  * values are then deleted depending on the 'chance' variable
  */
-export const gameInfo = new function () {
-    // Object.setPrototypeOf(this, )
-    this.gridAmount = 3;
-    this.tileAmount = 3;
+export const gameInfo = new class {
 
-    /** 2d array of gameInfo grids */
-    this.grids = [];
-    /** Physical size of the game gameInfo */
-    this.size = canvas.width;
-    /** Physical size of each grid in pixels */
-    this.gridSize = null;
-    /** Info about currently clicked tile */
-    this.clkdTileInfo = {
-        tile : null,
-        gR : null,
-        gC : null,
-        tC : null,
-        tR : null 
+    constructor() {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        this.gridAmount = 3;
+        this.tileAmount = 3;
+        /** 2d array of gameInfo grids */
+        this.grids = [];
+        /** Physical size of the game gameInfo */
+        this.size = canvas.width;
+        /** Info about currently clicked tile */
+        this.clkdTileInfo = {
+            tile : null,
+            gR : null,
+            gC : null,
+            tC : null,
+            tR : null 
+        }
     }
     
-    this.startGame = (gridAmount = 3, tileAmount = 3) => {
+
+    startGame = (gridAmount = 3, tileAmount = 3) => {
+        console.log('Game starts...');
         this.gridAmount = gridAmount;
         this.tileAmount = tileAmount;
         createBoard();
         mapRenderer.renderMap();
+        console.log('...game started!');
+        console.log(gameInfo);
     }
-    this.endGame = () => {
+    endGame = () => {
         throw new Error('Nothing was implemented yet!');
     }
     /**
@@ -51,13 +57,13 @@ export const gameInfo = new function () {
      * @param {Number} gridAmount amount of grids
      * @param {Number} tileAmount amount of tiles 
      */
-    function createBoard() {
+    createBoard() {
         // ctx.lineWidth = 3;
         updateSize();
         for (let row = 0; row < gameInfo.gridAmount; row++) {
             gameInfo.grids[row] = [];
             for (let col = 0; col < gameInfo.gridAmount; col++) {
-                let grid = new Grid(gameInfo.tileAmount, row * gameInfo.gridSize, col * gameInfo.gridSize, this.gridSize, row, col, 'null' , 'pink');
+                let grid = new Grid(row * gameInfo.gridSize, col * gameInfo.gridSize, row, col, 'null' , 'pink');
                 gameInfo.grids[row][col] = grid;
                 grid.createTiles();
             }
@@ -67,7 +73,7 @@ export const gameInfo = new function () {
     /**
      * Rescales the size of the gameInfo an its components to fit the canvas
      */
-    this.rescaleAsync = () => {
+    rescaleAsync() {
         updateSize();
         for (let gridRow = 0; gridRow < this.grids.length; gridRow++) {
             for (let gridCol = 0; gridCol < this.grids[gridRow].length; gridCol++) {
@@ -83,16 +89,18 @@ export const gameInfo = new function () {
     /** 
      * Updates grid size and ALL ITS COMPONENTS
      */
-    function updateSize() {
+    updateSize() {
+        gameInfo.size = canvas.width;
         gameInfo.gridSize = canvas.width / gameInfo.gridAmount - 1;
+        gameInfo.tileSize = gameInfo.gridSize / gameInfo.tileAmount - 1;
+        
     }
-    
     /**
      * Updates the clicked tile object 
      * @param {Number} x-coordinate of the click
      * @param {Number} y-coodrinate of the click
      */
-     this.updateClickedTile = (clickX, clickY) => {
+    updateClickedTile = (clickX, clickY) => {
         for (let gR = 0; gR < gameInfo.grids.length; gR++) {
             for (let gC = 0; gC < gameInfo.grids[gR].length; gC++) {
                 let tiles = gameInfo.grids[gR][gC].tiles;
@@ -131,7 +139,7 @@ export const gameInfo = new function () {
      * @param {Number} baseGC The tile column of the tile
      * @returns True if value is not repeating -> value was set to a tile, otherwise false
      */
-    this.checkValue = async (baseGR, baseGC, baseTR, baseTC, value) => {
+    checkValue = async (baseGR, baseGC, baseTR, baseTC, value) => {
         let horizCheck = checkValuesHoriz(this.grids, baseGR, baseGC, baseTR, baseTC, value);
         let vertCheck = checkValuesVert(this.grids, baseGR, baseGC, baseTR, baseTC, value);
         
@@ -147,7 +155,7 @@ export const gameInfo = new function () {
      * @param {Number} value The value to be checked
      * @returns Whether or not the value is unique horizontally
      */
-    function checkValuesHoriz(grids, baseGR, baseGC, baseTR, baseTC, value) {
+    checkValuesHoriz(grids, baseGR, baseGC, baseTR, baseTC, value) {
         return new Promise((resolve, rejected) => {
             // Horizontal Check
             for (let checkGR = 0; checkGR < grids.length; checkGR++) {
@@ -160,11 +168,11 @@ export const gameInfo = new function () {
                     }
                     // skips base tile & tiles with no value
                     if(checkGR == baseGR && checkTR == baseTR 
-                        || tiles[checkTR][baseTC]?.valueHolder.value == undefined) {
+                        || tiles[checkTR][baseTC]?.value == undefined) {
                         continue;
                     }
                     // if a repeating one
-                    if(tiles[checkTR][baseTC].valueHolder.value == value) {
+                    if(tiles[checkTR][baseTC].value == value) {
                         resolve(true);
                         return;
                     }
@@ -182,7 +190,7 @@ export const gameInfo = new function () {
      * @param {Number} value The value to be checked
      * @returns Whether or not the value is unique vertically
      */
-    function checkValuesVert(grids, baseGR, baseGC, baseTR, baseTC, value) {
+    checkValuesVert(grids, baseGR, baseGC, baseTR, baseTC, value) {
         // Vertical Check
         return new Promise((resolve, reject) => {
             for (let checkGC = 0; checkGC < grids[baseGR].length; checkGC++) {
@@ -196,11 +204,11 @@ export const gameInfo = new function () {
                     }
                     // skips base tile & tiles with no value
                     if(checkGC == baseGC && checkTC == baseTC 
-                        || tiles[baseTR][checkTC]?.valueHolder.value == undefined) {
+                        || tiles[baseTR][checkTC]?.value == undefined) {
                             continue;
                     }
                     // if a repeating one
-                    if(tiles[baseTR][checkTC].valueHolder.value == value) {
+                    if(tiles[baseTR][checkTC].value == value) {
                         resolve(false);
                         return;
                     }
@@ -212,7 +220,7 @@ export const gameInfo = new function () {
     //------------------------------------------------------------------------//
 }
 
-console.debug(gameInfo)
+
 /**
  *  @param {any} n Max number for the range (excluded)
  *  @return {Number} Returns random integer from 0 to n (excluded)

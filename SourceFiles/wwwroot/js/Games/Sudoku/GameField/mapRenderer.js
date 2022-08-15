@@ -1,11 +1,22 @@
-import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
+import { CanvasObj, StyleCanvasObj } from '/js/Games/canvasHelper.js'
 import { gameInfo, ctx } from '/js/Games/Sudoku/GameField/main.js';
 /** 
  * Contains handle method to draw everything on the gameInfo!
  * */
-export const mapRenderer = new function () {
+export const mapRenderer = new function() {
+    /**
+     * Asyncronously rescales the components to match the intended position on the canvas, 
+     * usually done window on resize
+     */
+     this.rescaleAsync = async () => {
+        console.time('rescale started:');
+        await gameInfo.rescaleAsync();
+        console.timeEnd('rescaling');
+        this.renderMap();
+    }
     /** Renders the board up-to-date */
     this.renderMap = () => {
+        ctx.lineWidth = 5;
         // Render each grid and tile
         gameInfo.grids.forEach(_ => _.forEach(grid => {
             this.renderGrid(grid);
@@ -20,15 +31,7 @@ export const mapRenderer = new function () {
                 );
             this.renderClickedTile();
         }
-        console.log("gameInfo rendererd")
-    }
-    /**
-     * Asyncronously rescales the components to match the intended position on the canvas, 
-     * usually done window on resize
-     */
-    this.rescaleAsync = () => {
-        gameInfo.rescaleAsync();
-        this.renderMap();
+        console.log(gameInfo);
     }
     /** 
      * Renders the grid with its tiles
@@ -36,6 +39,8 @@ export const mapRenderer = new function () {
      */
     this.renderGrid = (grid) => {
         grid.tiles.forEach(_ => _.forEach(tile => {
+            //grid.fill(ctx);
+            grid.outline(ctx, 'red');
             this.renderTile(tile);
         }));
     }
@@ -44,9 +49,8 @@ export const mapRenderer = new function () {
      * @param {Tile} tile tile to render
      */
     this.renderTile = (tile) => {
-        ctx.lineWidth = 15;
+        tile.fill(ctx);
         tile.outline(ctx, 'black');
-        tile.fill(ctx, 'blue')
         this.renderTileValue(tile);
     }
     /**
@@ -55,13 +59,13 @@ export const mapRenderer = new function () {
      */
     this.renderTileValue = (tile) => {
         // if this tile has a value
-        if(tile.valueHolder.value == null) {
+        if(tile.value == null) {
             return;
         }
         // ctx.textAlign = 'center';
         ctx.fillStyle = 'brown'
         ctx.font = '35px arial';
-        ctx.fillText(tile.valueHolder.value,
+        ctx.fillText(tile.value,
             tile.valueHolder.x,
             tile.valueHolder.y);
     }

@@ -1,5 +1,5 @@
 import { gameInfo } from './main.js';
-import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
+import { CanvasObj, StyleCanvasObj } from '/js/Games/canvasHelper.js'
 
 /** 
  * Creates a tile linked to the grid
@@ -15,13 +15,29 @@ import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
  * @param {Number} y position of the tile on y-axis (0 is at the top)
  * @param {Number} tileSize size of this tile in pixels
  * */
-export class Tile extends ColorCanvasObj{
+export class Tile extends StyleCanvasObj{
+    constructor(linkedGrid, x, y, row, col) {
+        super(parseInt(x), parseInt(y), parseInt(gameInfo.tileSize));
+        this.linkedGrid = linkedGrid;
+        this.row = row;
+        this.col = col;
+
+        // Configuring the value object of this tile
+        //--------------------------------------------------------------------------------\\
+        this.valueHolder = new StyleCanvasObj(x + 15, y + 30, this.size / 1.5) 
+        /** Value of the current tile */
+        this.valueHolder.value = null;
+        //--------------------------------------------------------------------------------//
+    }
+    get value() {
+        this.valueHolder.value;
+    }
     /**
      * Rescales one Tile
      */
     rescaleTile = () => {
-        this.x = this.row * this.linkedGrid.x;
-        this.y = this.col * this.linkedGrid.y;
+        this.x = (this.row * gameInfo.tileSize) * this.linkedGrid.x;
+        this.y = (this.col * gameInfo.tileSize) * this.linkedGrid.y;
         this.size = gameInfo.tileSize;
     };
      /**
@@ -39,21 +55,5 @@ export class Tile extends ColorCanvasObj{
     }
     /** Characters that could be a value */
     static possibleValues = /[1-9]/;
-    get value() {
-        return this.valueHolder.value;
-    }
-    constructor(linkedGrid, x, y, row, col, outlineColor, fillColor) {
-        super(parseInt(x), parseInt(y), parseInt(gameInfo.tileSize), outlineColor, fillColor);
-        this.linkedGrid = linkedGrid;
-        this.row = row;
-        this.col = col;
-        this.size = gameInfo.tileSize;
-
-        // Configuring the value object of this tile
-        //--------------------------------------------------------------------------------\\
-        this.valueHolder = new ColorCanvasObj(x + 15, y + 30, this.width) 
-        /** Value of the current tile */
-        this.valueHolder.value = null;
-        //--------------------------------------------------------------------------------//
-    }
+    
 }

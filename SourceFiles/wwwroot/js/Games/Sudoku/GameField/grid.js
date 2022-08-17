@@ -1,4 +1,4 @@
-import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js';
+import { CanvasObj, StyleCanvasObj } from '/js/Games/canvasHelper.js';
 import { Tile } from '/js/Games/Sudoku/GameField/tile.js'
 import { gameInfo } from '/js/Games/Sudoku/GameField/main.js'
  /**
@@ -12,12 +12,11 @@ import { gameInfo } from '/js/Games/Sudoku/GameField/main.js'
  * @param {String} outlineColor optional outline color
  * @param {String} fillColor optional fill color
  * */
-export class Grid extends ColorCanvasObj{
+export class Grid extends StyleCanvasObj{
     constructor(x, y, row, col, outlineColor = null, fillColor = null) {
-        super(parseInt(x), parseInt(y), parseInt(gameInfo.gridSize), outlineColor, fillColor);
+        super(parseInt(x), parseInt(y), parseInt(gameInfo.gridSize));
         this.row = row;
         this.col = col;
-        this.size = gameInfo.gridSize;
         /** Tiles the current grid obj consists of */
         this.tiles = [];
         
@@ -39,7 +38,7 @@ export class Grid extends ColorCanvasObj{
     /**
      * Recales the current grid
      */
-     rescaleAsync = async () => {
+    rescaleGridAsync = async () => {
         // console.log(`before: ${proto.x}, ${proto.y}: ${proto.size}`);
         this.x = this.row * gameInfo.gridSize;
         this.y = this.col * gameInfo.gridSize;

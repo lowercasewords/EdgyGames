@@ -1,5 +1,4 @@
 ﻿import { Grid } from '/js/Games/Sudoku/GameField/grid.js';
-import { Tile } from '/js/Games/Sudoku/GameField/tile.js';
 import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
 // NOTE: Coordinates in upper-left corner are (0, 0)! The y-axis is flipped! 
 // NOTE: Calls for starter gameInfo creation and rendering happens on the bottom
@@ -27,8 +26,6 @@ export const gameInfo = new class {
         this.tileAmount = 3;
         /** 2d array of gameInfo grids */
         this.grids = [];
-        /** Physical size of the game gameInfo */
-        this.size = canvas.width;
         /** Info about currently clicked tile */
         this.clkdTileInfo = {
             tile : null,
@@ -44,7 +41,7 @@ export const gameInfo = new class {
         console.log('Game starts...');
         this.gridAmount = gridAmount;
         this.tileAmount = tileAmount;
-        createBoard();
+        this.createBoard();
         mapRenderer.renderMap();
         console.log('...game started!');
         console.log(gameInfo);
@@ -59,28 +56,31 @@ export const gameInfo = new class {
      */
     createBoard() {
         // ctx.lineWidth = 3;
-        updateSize();
+        this.updateSize();
         for (let row = 0; row < gameInfo.gridAmount; row++) {
             gameInfo.grids[row] = [];
             for (let col = 0; col < gameInfo.gridAmount; col++) {
-                let grid = new Grid(row * gameInfo.gridSize, col * gameInfo.gridSize, row, col, 'null' , 'pink');
+                let grid = new Grid(row * gameInfo.gridSize, col * gameInfo.gridSize, row, col);
                 gameInfo.grids[row][col] = grid;
                 grid.createTiles();
             }
         }
+        this.updateSize();
     }
     
     /**
      * Rescales the size of the gameInfo an its components to fit the canvas
      */
-    rescaleAsync() {
-        updateSize();
+    async rescaleAsync() {
+        this.updateSize();
         for (let gridRow = 0; gridRow < this.grids.length; gridRow++) {
             for (let gridCol = 0; gridCol < this.grids[gridRow].length; gridCol++) {
                 let grid = this.grids[gridRow][gridCol];
-                // new Promise((resolve, reject) => 
-                grid.rescaleAsync(gridRow, gridCol)
-                // );
+                await new Promise((resolve, reject) => {
+                    grid.rescaleGridAsync(gridRow, gridCol)
+                    resolve();
+                    }
+                );
             }
         }
     }
@@ -90,10 +90,11 @@ export const gameInfo = new class {
      * Updates grid size and ALL ITS COMPONENTS
      */
     updateSize() {
-        gameInfo.size = canvas.width;
+        console.info(`canvas.width: ${canvas.width}`);
+        console.info(`canvas.offsetWidth: ${canvas.offsetWidth}`);
+        console.info(`canvas.clientWidth: ${canvas.clientWidth}`);
         gameInfo.gridSize = canvas.width / gameInfo.gridAmount - 1;
         gameInfo.tileSize = gameInfo.gridSize / gameInfo.tileAmount - 1;
-        
     }
     /**
      * Updates the clicked tile object 

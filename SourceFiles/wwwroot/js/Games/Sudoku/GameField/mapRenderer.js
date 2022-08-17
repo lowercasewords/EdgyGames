@@ -39,7 +39,6 @@ export const mapRenderer = new function() {
      */
     this.renderGrid = (grid) => {
         grid.tiles.forEach(_ => _.forEach(tile => {
-            //grid.fill(ctx);
             grid.outline(ctx, 'red');
             this.renderTile(tile);
         }));

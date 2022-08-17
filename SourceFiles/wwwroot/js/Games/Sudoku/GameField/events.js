@@ -86,13 +86,13 @@ window.addEventListener('onkeydown', (event) => {
         mapRenderer.renderMap();
     }
 });
-
-canvas.addEventListener('onclick', (event) => {
+console.log('this should work')
+canvas.addEventListener('click', event => {
     mapRenderer.renderMap();
     const eX = event.offsetX,
           eY = event.offsetY;
     gameInfo.updateClickedTile(eX, eY);
-    console.log(eX + ", " + eY);
+    console.log("Click on " + eX + ", " + eY);
     mapRenderer.renderMap();
 });
 //--------------------------------------------------\\

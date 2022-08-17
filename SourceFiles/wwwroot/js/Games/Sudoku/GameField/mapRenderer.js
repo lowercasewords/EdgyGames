@@ -1,3 +1,4 @@
+import { canvas } from './main.js';
 import { CanvasObj, StyleCanvasObj } from '/js/Games/canvasHelper.js'
 import { gameInfo, ctx } from '/js/Games/Sudoku/GameField/main.js';
 /** 
@@ -16,6 +17,7 @@ export const mapRenderer = new function() {
     }
     /** Renders the board up-to-date */
     this.renderMap = () => {
+        this.rescaleAsync();
         ctx.lineWidth = 5;
         // Render each grid and tile
         gameInfo.grids.forEach(_ => _.forEach(grid => {

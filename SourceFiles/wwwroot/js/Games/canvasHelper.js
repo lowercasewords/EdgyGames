@@ -74,9 +74,9 @@ export class StyleCanvasObj extends CanvasObj{
  * @oaram {Object} canvas the canvas to manipulate
  * @param {funciton} rescale callback to rescale the canvas gameInfo
  */
-export function resize(canvas, rescale) {
+export function rescaleObj(canvas) {
+    // ctx.scale()
     canvas.height = canvas.offsetHeight;
     canvas.width = canvas.offsetWidth;
-    rescale();
     console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
 }

@@ -1,27 +1,16 @@
 import { canvas, ctx, gameInfo } from '/js/Games/Sudoku/GameField/main.js';
 import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
-import { resize } from '/js/Games/canvasHelper.js';
-
-/**
- * Corrects the scaling of the canvas elements 
- */
-function correctCanvas() {
-    resize(canvas, mapRenderer.rescaleAsync);
-    // ctx.fillStyle = 'red';
-    // ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
+import { rescaleCanvas } from '/js/Games/canvasHelper.js';
 // Event Handlers
 //--------------------------------------------------\\
 window.addEventListener(('load'), event => {
     correctCanvas();
 })
-window.addEventListener('resize', (event) => {
-    // ctx.scale(canvas.width, canvas.height);
-    correctCanvas();
+window.addEventListener('resize', event => {
+    rescaleCanvas();
 });
 
-window.addEventListener('onkeydown', (event) => {
+window.addEventListener('onkeydown', event => {
     // if could set a number to a tile, add it to value pile;
     if(gameInfo.clkdTileInfo?.tile == null) {
         return;

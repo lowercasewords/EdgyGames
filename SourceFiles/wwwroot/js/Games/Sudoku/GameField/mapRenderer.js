@@ -4,19 +4,21 @@ import { gameInfo, ctx } from '/js/Games/Sudoku/GameField/main.js';
 /** 
  * Contains handle method to draw everything on the gameInfo!
  * */
-export const mapRenderer = new function() {
+export const mapRenderer = {
     /**
      * Asyncronously rescales the components to match the intended position on the canvas, 
      * usually done window on resize
      */
-     this.rescaleAsync = async () => {
-        console.time('rescale started:');
-        await gameInfo.rescaleAsync();
-        console.timeEnd('rescaling');
+     rescaleMap: async () => {
+        console.log('rescaling...');
+        // console.time('rescale started:');
+        gameInfo.rescaleAsync();
+        // console.timeEnd('rescaling');
         this.renderMap();
-    }
+    },
     /** Renders the board up-to-date */
-    this.renderMap = () => {
+    renderMap: () => {
+        console.log('Rendering the map...');
         this.rescaleAsync();
         ctx.lineWidth = 5;
         // Render each grid and tile
@@ -34,31 +36,31 @@ export const mapRenderer = new function() {
             this.renderClickedTile();
         }
         console.log(gameInfo);
-    }
+    },
     /** 
      * Renders the grid with its tiles
      * @param {Grid} grid Grid to render
      */
-    this.renderGrid = (grid) => {
+    renderGrid: (grid) => {
         grid.tiles.forEach(_ => _.forEach(tile => {
             grid.outline(ctx, 'red');
             this.renderTile(tile);
         }));
-    }
+    },
     /**
      * Renders individual tile
      * @param {Tile} tile tile to render
      */
-    this.renderTile = (tile) => {
+    renderTile: (tile) => {
         tile.fill(ctx);
         tile.outline(ctx, 'black');
         this.renderTileValue(tile);
-    }
+    },
     /**
      * Renders the value of specified tile
      * @param {Tile} tile the tile which value should be rendered
      */
-    this.renderTileValue = (tile) => {
+    renderTileValue: (tile) => {
         // if this tile has a value
         if(tile.value == null) {
             return;
@@ -69,11 +71,11 @@ export const mapRenderer = new function() {
         ctx.fillText(tile.value,
             tile.valueHolder.x,
             tile.valueHolder.y);
-    }
+    },
     /**
      * Renderes the selected tile with the value
      * */
-    this.renderClickedTile = () => {
+    renderClickedTile: () => {
         if(gameInfo.clkdTileInfo.tile == null) {
             return;
         }
@@ -89,7 +91,7 @@ export const mapRenderer = new function() {
      * @param {Number} baseTR tile row of the base tile
      * @param {Number} baseTC tile col of the base tile
      */
-    this.rendrerCrossTiles = (baseGR, baseGC, baseTR, baseTC) => {
+    rendrerCrossTiles: (baseGR, baseGC, baseTR, baseTC) => {
         function highlightTile(tile) {
             tile.fill(ctx, '#e3e3c7');
         }

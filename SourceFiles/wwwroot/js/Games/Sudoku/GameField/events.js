@@ -9,6 +9,7 @@ window.addEventListener(('load'), event => {
 window.addEventListener('resize', event => {
     // gameInfo.rescaleMap();
     rescaleCanvas(canvas);
+    mapRenderer.renderMap();
 });
 
 window.addEventListener('onkeydown', event => {
@@ -80,7 +81,7 @@ canvas.addEventListener('click', event => {
     const eX = event.offsetX,
           eY = event.offsetY;
     gameInfo.updateClickedTile(eX, eY);
-    console.log("Click on " + eX + ", " + eY);
+    
     mapRenderer.renderMap();
 });
 //--------------------------------------------------\\

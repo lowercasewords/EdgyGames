@@ -29,19 +29,19 @@ export const gameInfo = new class{
     gridHeight = canvas.height / 3 - 1;
     tileWidth = this.gridWidth / 3 - 1;
     tileHeight = this.gridHeight / 3 - 1;
+
     /** Amount of grids SQUARED */
     gridAmount = 3;
     /** Amount of tiles SQUARED */
     tileAmount = 3;
     
     startGame = (gridAmount = 3, tileAmount = 3) => {
-        console.log('Game starts...');
         gameInfo.gridAmount = gridAmount;
         gameInfo.tileAmount = tileAmount;
         this.createBoard();
         mapRenderer.renderMap();
-        console.log('...game started!');
-        console.log(gameInfo);
+        console.log('Game starts!');
+        console.info(gameInfo);
     }
     endGame = () => {
         throw new Error('Nothing was implemented yet!');
@@ -177,7 +177,7 @@ export const gameInfo = new class{
         return new Promise((resolve, reject) => {
             for (let checkGC = 0; checkGC < grids[baseGR].length; checkGC++) {
                 let tiles = grids[baseGR][checkGC].tiles;
-                console.log(tiles);
+                
                 for(let checkTC = 0; checkTC < grids[baseGR][checkGC].tiles[baseTR].length; checkTC++) {
                     // skips non-existing grids
                     if(grids[baseGR][checkGC] == undefined && baseGC != checkGC) {

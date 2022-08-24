@@ -19,7 +19,7 @@ export class Grid extends StyleCanvasObj{
         this.col = col;
         /** Tiles the current grid obj consists of */
         this.tiles = [];
-        console.log(`x: ${this.x}\n${this.y}`);
+        
     }
     
     /**

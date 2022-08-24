@@ -2,15 +2,16 @@ import { ctx } from "./Sudoku/GameField/main.js";
 
  /**
  * Defines a 2D Canvas Object with default position
- * @param {Number} size size (width and height)
  * @param {Number} x x-coordinate
  * @param {Number} y y-coordinate
+ * @param {Number} width width of the object
+ * @param {Number} height height of the height
  */
 export class CanvasObj {
-    constructor(x, y, size) {
+    constructor(x, y, width, height) {
         this.x = x;
         this.y = y;
-        this.size = size;
+        this.width = height;
 
         /**
          * Checks if your point is within this object
@@ -27,15 +28,13 @@ export class CanvasObj {
  /**
  * Extends a Canvas Class, additionally having 
  * render properties with custom default style
- * @param {Number} size size (width and height)
  * @param {Number} x x-coordinate
  * @param {Number} y y-coordinate
- * @param {String} outlineStyle default outline style
- * @param {String} fillStyle default fill style
+ * @param {Number} width width of the object
  */
 export class StyleCanvasObj extends CanvasObj{
-    constructor(x, y, size) {
-        super(x, y, size);
+    constructor(x, y, width, height) {
+        super(x, y, width, height);
     };
     /**
      * Fills up the current canvas object with custom style
@@ -76,10 +75,11 @@ export class StyleCanvasObj extends CanvasObj{
  * @oaram {Object} canvas the canvas to manipulate
  */
 export function rescaleCanvas(canvas) {
-    const scaleX = canvas.offsetHeight / canvas.height;
-    const scaleyY = canvas.offsetWidth / canvas.width;
-    canvas.height = canvas.offsetHeight / canvas.height;
-    canvas.width = canvas.offsetWidth / canvas.width;
-    ctx.scale(scaleX, scaleyY);
-    console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
+    const scaleX = canvas.clientWidth / canvas.clientWidth;
+    const scaleY = canvas.clientHeight / canvas.height;
+    console.log(`scaling x: ${scaleX} | y: ${scaleY}`);
+    canvas.height = canvas.clientHeight;
+    canvas.width = canvas.clientWidth;
+    ctx.scale(scaleX, scaleY);
+    
 }

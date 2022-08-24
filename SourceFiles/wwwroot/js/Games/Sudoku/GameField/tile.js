@@ -14,14 +14,14 @@ export class Tile extends StyleCanvasObj{
         this.row = row;
         this.col = col;
         this.linkedGrid = linkedGrid;
-        this.valuesHolder = new StyleCanvasObj(this.x + 15, this.y + 30, this.size / 1.5);
+        this.valueHolder = new StyleCanvasObj(this.x + 15, this.y + 30, this.size / 1.5);
         /** Value of the current tile */
-        this.valuesHolder.value = null;
+        this.valueHolder.value = -1;
     }
     
 
     get value() {
-        this.valueHolder.value;
+      return this.valueHolder.value;
     }
     /**
      * Rescales one Tile

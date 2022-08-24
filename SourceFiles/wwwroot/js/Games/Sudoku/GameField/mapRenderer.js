@@ -1,5 +1,5 @@
 import { canvas } from './main.js';
-import { CanvasObj, StyleCanvasObj } from '/js/Games/canvasHelper.js'
+import { CanvasObj, StyleCanvasObj, rescaleCanvas } from '/js/Games/canvasHelper.js'
 import { gameInfo, ctx } from '/js/Games/Sudoku/GameField/main.js';
 /** 
  * Contains handle method to draw everything on the gameInfo!
@@ -7,8 +7,7 @@ import { gameInfo, ctx } from '/js/Games/Sudoku/GameField/main.js';
 export const mapRenderer = {
     /** Renders the board up-to-date */
     renderMap: () => {
-        console.log('Rendering the map...');
-        ctx.lineWidth = 5;
+        rescaleCanvas(canvas);
         // Render each grid and tile
         gameInfo.grids.forEach(_ => _.forEach(grid => {
             mapRenderer.renderGrid(grid);
@@ -23,15 +22,21 @@ export const mapRenderer = {
                 );
             mapRenderer.renderClickedTile();
         }
-        console.log(gameInfo);
+        console.info(`canvas.width ${canvas.width} | canvas.height: ${canvas.height}`);
+        console.info(`canvas.clientWidth ${canvas.clientWidth} | canvas.clientWidth: ${canvas.clientHeight}`);
     },
     /** 
      * Renders the grid with its tiles
      * @param {Grid} grid Grid to render
      */
     renderGrid: (grid) => {
+        ctx.lineWidth = 2;
         grid.tiles.forEach(_ => _.forEach(tile => {
             grid.outline(ctx, 'red');
+            ctx.fillStyle = 'yellow';
+            ctx.fillRect(grid.x, grid.y, 5, 5);
+            ctx.fillStyle = 'green';
+            ctx.fillRect(grid.x + grid.width, grid.y + grid.height, 5, 5);
             mapRenderer.renderTile(tile);
         }));
     },
@@ -40,6 +45,7 @@ export const mapRenderer = {
      * @param {Tile} tile tile to render
      */
     renderTile: (tile) => {
+        ctx.lineWidth = 2;
         tile.fill(ctx);
         tile.outline(ctx, 'black');
         mapRenderer.renderTileValue(tile);

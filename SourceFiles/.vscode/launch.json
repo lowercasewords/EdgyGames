@@ -5,7 +5,7 @@
             // Use IntelliSense to find out which attributes exist for C# debugging
             // Use hover for the description of the existing attributes
             // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": ".NET Core Launch (web)",
+            "name": "USE THIS .NET Core!",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -13,9 +13,7 @@
             "program": "${workspaceFolder}/bin/Debug/netcoreapp6.0/EdgyGames.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
-            "stopAtEntry": false,
-            // Should be opened in the new window!
-            //--------------------------------\\
+            "stopAtEntry": true,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             // "serverReadyAction": {
             //     "action": "openExternally",
@@ -27,7 +25,8 @@
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
-            }
+            },
+            "justMyCode": false
         },
         {
             "name": ".NET Core Attach",

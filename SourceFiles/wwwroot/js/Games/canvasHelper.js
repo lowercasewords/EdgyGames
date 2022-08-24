@@ -1,3 +1,5 @@
+import { ctx } from "./Sudoku/GameField/main.js";
+
  /**
  * Defines a 2D Canvas Object with default position
  * @param {Number} size size (width and height)
@@ -6,9 +8,9 @@
  */
 export class CanvasObj {
     constructor(x, y, size) {
-        this.x = parseInt(x);
-        this.y = parseInt(y);
-        this.size = parseInt(size);
+        this.x = x;
+        this.y = y;
+        this.size = size;
 
         /**
          * Checks if your point is within this object
@@ -70,13 +72,14 @@ export class StyleCanvasObj extends CanvasObj{
 }
 
 /**
- * Resizes the canvas according to the window
+ * Rescales the canvas according to the window
  * @oaram {Object} canvas the canvas to manipulate
- * @param {funciton} rescale callback to rescale the canvas gameInfo
  */
-export function rescaleObj(canvas) {
-    // ctx.scale()
-    canvas.height = canvas.offsetHeight;
-    canvas.width = canvas.offsetWidth;
+export function rescaleCanvas(canvas) {
+    const scaleX = canvas.offsetHeight / canvas.height;
+    const scaleyY = canvas.offsetWidth / canvas.width;
+    canvas.height = canvas.offsetHeight / canvas.height;
+    canvas.width = canvas.offsetWidth / canvas.width;
+    ctx.scale(scaleX, scaleyY);
     console.log(`canvas height: ${canvas.height}\ncanvas width: ${canvas.width}`);
 }

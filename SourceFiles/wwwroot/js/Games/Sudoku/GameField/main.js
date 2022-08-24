@@ -19,31 +19,26 @@ export const gameInfo = new class{
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
     }
+    /** Info about currently clicked tile */
+    clkdTileInfo = null;
+
     /** 2d array of gameInfo grids */
     grids = [];
 
     gridWidth = canvas.width / 3 - 1;
     gridHeight = canvas.height / 3 - 1;
-    tileWidth = objSizes.gridWidth / 3 - 1;
-    tileHeight = objSizes.gridHeight / 3 - 1;
+    tileWidth = this.gridWidth / 3 - 1;
+    tileHeight = this.gridHeight / 3 - 1;
     /** Amount of grids SQUARED */
     gridAmount = 3;
     /** Amount of tiles SQUARED */
     tileAmount = 3;
-
-    /** Info about currently clicked tile */
-    clkdTileInfo = {
-        tile: null,
-        gR: null,
-        gC: null,
-        tC: null,
-        tR: null,
-    }
-    startGame = async function (gridAmount = 3, tileAmount = 3) {
+    
+    startGame = (gridAmount = 3, tileAmount = 3) => {
         console.log('Game starts...');
         gameInfo.gridAmount = gridAmount;
         gameInfo.tileAmount = tileAmount;
-        gameInfo.createBoard();
+        this.createBoard();
         mapRenderer.renderMap();
         console.log('...game started!');
         console.log(gameInfo);
@@ -62,7 +57,7 @@ export const gameInfo = new class{
         for (let row = 0; row < gameInfo.gridAmount; row++) {
             gameInfo.grids[row] = [];
             for (let col = 0; col < gameInfo.gridAmount; col++) {
-                let grid = new Grid(row * gameInfo.objSizes.gridWidth, col * gameInfo.objSizes.gridHeight, row, col);
+                let grid = new Grid(row * gameInfo.gridWidth, col * gameInfo.gridHeight, row, col);
                 gameInfo.grids[row][col] = grid;
                 grid.createTiles();
             }
@@ -93,15 +88,15 @@ export const gameInfo = new class{
     //     console.info(`canvas.width = ${canvas.width}`);
     //     console.info(`canvas.offsetWidth: ${canvas.offsetWidth}`);
     //     console.info(`canvas.clientWidth: ${canvas.clientWidth}`);
-    //     gameInfo.objSizes.gridWidth = canvas.width / gameInfo.gridAmount - 1;
-    //     gameInfo.objSizes.tileWidth = gameInfo.objSizes.gridWidth / gameInfo.tileAmount - 1;
+    //     gameInfo.gridWidth = canvas.width / gameInfo.gridAmount - 1;
+    //     gameInfo.tileWidth = gameInfo.gridWidth / gameInfo.tileAmount - 1;
     // }
     /**
      * Updates the clicked tile object 
      * @param {Number} x-coordinate of the click
      * @param {Number} y-coodrinate of the click
      */
-    updateClickedTile = function (clickX, clickY) {
+    updateClickedTile = (clickX, clickY) =>{
         for (let gR = 0; gR < gameInfo.grids.length; gR++) {
             for (let gC = 0; gC < gameInfo.grids[gR].length; gC++) {
                 let tiles = gameInfo.grids[gR][gC].tiles;
@@ -111,21 +106,12 @@ export const gameInfo = new class{
                         if (tiles[tR][tC].inShape(clickX, clickY)) 
                         {
                             gameInfo.clkdTileInfo.tile = tiles[tR][tC];
-                            gameInfo.clkdTileInfo.gR = gR;
-                            gameInfo.clkdTileInfo.gC = gC;
-                            gameInfo.clkdTileInfo.tC = tC;
-                            gameInfo.clkdTileInfo.tR = tR;
                             return;
                         }
                     }
                 }
             }
         }
-        gameInfo.clkdTileInfo.tile = null;
-        gameInfo.clkdTileInfo.gR = null;
-        gameInfo.clkdTileInfo.tC = null;
-        gameInfo.clkdTileInfo.gC = null;
-        gameInfo.clkdTileInfo.tR = null;
     }
 
     /** 
@@ -136,7 +122,7 @@ export const gameInfo = new class{
      * @param {Number} baseGC The tile column of the tile
      * @returns True if value is not repeating -> value was set to a tile, otherwise false
      */
-    checkValue = async function (baseGR, baseGC, baseTR, baseTC, value) {
+    checkValue = async (baseGR, baseGC, baseTR, baseTC, value) => {
         let horizCheck = checkValuesHoriz(gameInfo.grids, baseGR, baseGC, baseTR, baseTC, value);
         let vertCheck = checkValuesVert(gameInfo.grids, baseGR, baseGC, baseTR, baseTC, value);
         let gridCheck = gameInfo.grids[baseGR][baseGC].checkGridValues(value);

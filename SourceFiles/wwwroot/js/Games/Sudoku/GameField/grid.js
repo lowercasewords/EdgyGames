@@ -5,7 +5,7 @@ import { gameInfo } from '/js/Games/Sudoku/GameField/main.js'
  * Creates a grid object connected to a sudoku gameInfo. Asigns values to the tiles
  * @param {Number} x x position of this obj (starts to the left)
  * @param {Number} y y position of this obj (starts on top)
- * @param {Number} gridSize the size of this grid
+ * @param {Number} gridWidth the size of this grid
  * (for example if tiles == 3 => grid is 3x3)
  * @param {Number} row A gameInfo row in which this grid exists
  * @param {Number} col A gameInfo col in which this grid exists
@@ -13,13 +13,12 @@ import { gameInfo } from '/js/Games/Sudoku/GameField/main.js'
  * @param {String} fillColor optional fill color
  * */
 export class Grid extends StyleCanvasObj{
-    constructor(x, y, row, col, outlineColor = null, fillColor = null) {
-        super(parseInt(x), parseInt(y), parseInt(gameInfo.gridSize));
+    constructor(x, y, row, col) {
+        super(x, y, gameInfo.gridWidth);
         this.row = row;
         this.col = col;
         /** Tiles the current grid obj consists of */
         this.tiles = [];
-        
         console.log(`x: ${this.x}\n${this.y}`);
     }
     
@@ -30,7 +29,7 @@ export class Grid extends StyleCanvasObj{
         for (let tileRow = 0; tileRow < gameInfo.tileAmount; tileRow++) {
             this.tiles[tileRow] = [];
             for (let tileCol = 0; tileCol < gameInfo.tileAmount; tileCol++) {
-                let tile = new Tile(this, this.x + (gameInfo.tileSize * tileRow), this.y + (gameInfo.tileSize * tileCol), tileRow, tileCol);
+                let tile = new Tile(this, this.x + (gameInfo.tileWidth * tileRow), this.y + (gameInfo.tileWidth * tileCol), tileRow, tileCol);
                 this.tiles[tileRow][tileCol] = tile;
             }
         }
@@ -39,12 +38,9 @@ export class Grid extends StyleCanvasObj{
      * Recales the current grid
      */
     rescaleGridAsync = async () => {
-        // console.log(`before: ${proto.x}, ${proto.y}: ${proto.size}`);
-        this.x = this.row * gameInfo.gridSize;
-        this.y = this.col * gameInfo.gridSize;
-        this.size = gameInfo.gridSize;
-        // console.log(`after: ${proto.x}, ${proto.y}: ${proto.size}`);
-        // console.log(`in prototype: ${p.x}, ${p.y}: ${p.size}`);
+        this.x = this.row * gameInfo.gridWidth;
+        this.y = this.col * gameInfo.gridWidth;
+        this.size = gameInfo.gridWidth;
         let promises = [];
         this.tiles.forEach(_ => _.forEach(tile => {
             promises.push(new Promise((resolve, reject) => 

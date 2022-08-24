@@ -4,10 +4,11 @@ import { rescaleCanvas } from '/js/Games/canvasHelper.js';
 // Event Handlers
 //--------------------------------------------------\\
 window.addEventListener(('load'), event => {
-    correctCanvas();
+    // correctCanvas();
 })
 window.addEventListener('resize', event => {
-    rescaleCanvas();
+    // gameInfo.rescaleMap();
+    rescaleCanvas(canvas);
 });
 
 window.addEventListener('onkeydown', event => {
@@ -15,10 +16,10 @@ window.addEventListener('onkeydown', event => {
     if(gameInfo.clkdTileInfo?.tile == null) {
         return;
     }
-    let clickedGrid = gameInfo.grids[gameInfo.clkdTileInfo.gR][gameInfo.clkdTileInfo.gC];
+    let clickedGrid = gameInfo.grids[gameInfo.clkdTileInfo.row][gameInfo.clkdTileInfo.col];
      //tries to set the players value to the tile
     if(Tile.prototype.possibleValues.test(event.key) 
-        && clickedGrid.setTileValue(gameInfo.clkdTileInfo.tR, gameInfo.clkdTileInfo.tC, event.key)) 
+        && clickedGrid.setTileValue(gameInfo.clkdTileInfo.linkedGrid.row, gameInfo.clkdTileInfo.linkedGrid.col, event.key)) 
     {
         mapRenderer.renderClickedTile();
         return;
@@ -29,7 +30,7 @@ window.addEventListener('onkeydown', event => {
     movingWithKeys: 
     if(/(arrow(up|down|left|right)|[wasd])/.test(key)) {  
         let gridsLength = gameInfo.grids.length;
-        let tilesLength = gameInfo.grids[gameInfo.clkdTileInfo.gR][gameInfo.clkdTileInfo.gC].tiles.length;
+        let tilesLength = gameInfo.grids[gameInfo.clkdTileInfo.row][gameInfo.clkdTileInfo.col].tiles.length;
         // 1 == up, 2 == right, 3 == down, 4 == left
         let direction = 0;
         switch (key) {
@@ -58,8 +59,8 @@ window.addEventListener('onkeydown', event => {
             break movingWithKeys;
         }
         // getting appropriate property name
-        const tile = direction == 1 || direction == 3 ? 'tC' : 'tR',
-              grid = direction == 1 || direction == 3 ? 'gC' : 'gR';
+        const tile = direction == 1 || direction == 3 ? 'tile' : 'linkedGrid.tile',
+              grid = direction == 1 || direction == 3 ? 'row' : 'linkedGrid.row';
 
         // if it's not the last tile in specific direction
         if(direction == 1 || direction == 4 ? (gameInfo.clkdTileInfo[tile] > 0) : (gameInfo.clkdTileInfo[tile] < tilesLength - 1)) {
@@ -71,13 +72,11 @@ window.addEventListener('onkeydown', event => {
             direction == 1 || direction == 4 ? gameInfo.clkdTileInfo[tile] = tilesLength - 1 : gameInfo.clkdTileInfo[tile] = 0;
         }
         // reasigning the reference to a tile itself
-        gameInfo.clkdTileInfo.tile = gameInfo.grids[gameInfo.clkdTileInfo.gR][gameInfo.clkdTileInfo.gC].tiles[gameInfo.clkdTileInfo.tR][gameInfo.clkdTileInfo.tC];
+        gameInfo.clkdTileInfo.tile = gameInfo.grids[gameInfo.clkdTileInfo.row][gameInfo.clkdTileInfo.col].tiles[gameInfo.clkdTileInfo.linkedGrid.row][gameInfo.clkdTileInfo.linkedGrid.col];
         mapRenderer.renderMap();
     }
 });
-console.log('this should work')
 canvas.addEventListener('click', event => {
-    mapRenderer.renderMap();
     const eX = event.offsetX,
           eY = event.offsetY;
     gameInfo.updateClickedTile(eX, eY);

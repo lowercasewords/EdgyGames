@@ -8,11 +8,11 @@ import { ctx } from "./Sudoku/GameField/main.js";
  * @param {Number} height height of the height
  */
 export class CanvasObj {
-    constructor(x, y, width, height) {
+    constructor(x, y, width) {
         this.x = x;
         this.y = y;
-        this.width = height;
-
+        this.width = width;
+        this.height = height;
         /**
          * Checks if your point is within this object
          * @param {*} pointX
@@ -20,17 +20,20 @@ export class CanvasObj {
          * @returns whether or not specified coordinate hit the shape
          */
         this.inShape = (pointX, pointY) => {
-            return pointX >= x && pointX <= x + size &&
-                pointY >= y && pointY <= y + size;
+            return pointX >= x && pointX <= x + width &&
+                pointY >= y && pointY <= y + height;
         };
     }
 }
+
+
  /**
  * Extends a Canvas Class, additionally having 
  * render properties with custom default style
  * @param {Number} x x-coordinate
  * @param {Number} y y-coordinate
  * @param {Number} width width of the object
+ * @param {Number} height height of the object
  */
 export class StyleCanvasObj extends CanvasObj{
     constructor(x, y, width, height) {
@@ -43,12 +46,12 @@ export class StyleCanvasObj extends CanvasObj{
      */
     fill = (context, style = undefined) => {
         if(style == undefined) {
-            context.clearRect(this.x, this.y, this.size, this.size);
+            context.clearRect(this.x, this.y, this.width, this.height);
             return;
         }
         this.saveStyle(context);
         context.fillStyle = style;
-        context.fillRect(this.x, this.y, this.size, this.size);
+        context.fillRect(this.x, this.y, this.width, this.height);
         this.releaseStyle(context);
     };
     /**
@@ -58,12 +61,12 @@ export class StyleCanvasObj extends CanvasObj{
      */
     outline = (context, style = undefined) => {
         if(style == undefined) {
-            context.clearRect(this.x, this.y, this.size, this.size);
+            context.clearRect(this.x, this.y, this.width, this.height);
             return;
         }
         this.saveStyle(context);
         context.strokeStyle = style;
-        context.strokeRect(this.x, this.y, this.size, this.size);
+        context.strokeRect(this.x, this.y, this.width, this.height);
         this.releaseStyle(context);
     }
     saveStyle = (context) => this.savedStyle = context.fillStyle;
@@ -72,7 +75,7 @@ export class StyleCanvasObj extends CanvasObj{
 
 /**
  * Rescales the canvas according to the window
- * @oaram {Object} canvas the canvas to manipulate
+ * @param {Object} canvas the canvas to manipulate
  */
 export function rescaleCanvas(canvas) {
     const scaleX = canvas.clientWidth / canvas.clientWidth;
@@ -81,5 +84,4 @@ export function rescaleCanvas(canvas) {
     canvas.height = canvas.clientHeight;
     canvas.width = canvas.clientWidth;
     ctx.scale(scaleX, scaleY);
-    
 }

@@ -14,12 +14,15 @@ import { gameInfo } from '/js/Games/Sudoku/GameField/main.js'
  * */
 export class Grid extends StyleCanvasObj{
     constructor(x, y, row, col) {
-        super(x, y, gameInfo.gridWidth);
+        super(x, y, gameInfo.gridWidth, gameInfo.gridHeight);
+        delete this.width;
+        delete this.height;
+        Grid.prototype.width = gameInfo.gridwidth;
+        Grid.prototype.height =  gameInfo.gridHeight; 
         this.row = row;
         this.col = col;
         /** Tiles the current grid obj consists of */
         this.tiles = [];
-        
     }
     
     /**
@@ -29,28 +32,29 @@ export class Grid extends StyleCanvasObj{
         for (let tileRow = 0; tileRow < gameInfo.tileAmount; tileRow++) {
             this.tiles[tileRow] = [];
             for (let tileCol = 0; tileCol < gameInfo.tileAmount; tileCol++) {
-                let tile = new Tile(this, this.x + (gameInfo.tileWidth * tileRow), this.y + (gameInfo.tileWidth * tileCol), tileRow, tileCol);
+                let tile = new Tile(this, this.x + (gameInfo.tileWidth * tileRow), this.y + (gameInfo.tileHeight * tileCol), tileRow, tileCol);
                 this.tiles[tileRow][tileCol] = tile;
             }
         }
     };
-    /**
-     * Recales the current grid
-     */
-    rescaleGridAsync = async () => {
-        this.x = this.row * gameInfo.gridWidth;
-        this.y = this.col * gameInfo.gridWidth;
-        this.size = gameInfo.gridWidth;
-        let promises = [];
-        this.tiles.forEach(_ => _.forEach(tile => {
-            promises.push(new Promise((resolve, reject) => 
-            {
-                tile.rescaleTile();
-                resolve();
-            }));
-        }))
-        await Promise.all(promises);
-    };
+    // /**
+    //  * Recales the current grid
+    //  */
+    // rescaleGridAsync = async () => {
+    //     this.x = this.row * gameInfo.gridWidth;
+    //     this.y = this.col * gameInfo.gridHeight;
+    //     this.width = gameInfo.gridWidth;
+    //     this.gridHeight = gameInfo.gridHeight;
+    //     let promises = [];
+    //     this.tiles.forEach(_ => _.forEach(tile => {
+    //         promises.push(new Promise((resolve, reject) => 
+    //         {
+    //             tile.rescaleTile();
+    //             resolve();
+    //         }));
+    //     }))
+    //     await Promise.all(promises);
+    // };
 
     /**
      * Checks if the specific value is unique in the same grid

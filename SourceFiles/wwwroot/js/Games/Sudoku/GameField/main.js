@@ -14,7 +14,7 @@ let tileChance = 10;
  * Each tile in the grids is filled with values to ensure a possible victory, some 
  * values are then deleted depending on the 'chance' variable
  */
-export const gameInfo = new class{
+export const gameInfo = new class {
     constructor() {
         canvas.width = canvas.clientWidth;
         canvas.height = canvas.clientHeight;
@@ -24,7 +24,7 @@ export const gameInfo = new class{
 
     /** 2d array of gameInfo grids */
     grids = [];
-
+    
     gridWidth = canvas.width / 3 - 1;
     gridHeight = canvas.height / 3 - 1;
     tileWidth = this.gridWidth / 3 - 1;
@@ -36,8 +36,8 @@ export const gameInfo = new class{
     tileAmount = 3;
     
     startGame = (gridAmount = 3, tileAmount = 3) => {
-        gameInfo.gridAmount = gridAmount;
-        gameInfo.tileAmount = tileAmount;
+        this.gridAmount = gridAmount;
+        this.tileAmount = tileAmount;
         this.createBoard();
         mapRenderer.renderMap();
         console.log('Game starts!');
@@ -57,7 +57,7 @@ export const gameInfo = new class{
         for (let row = 0; row < gameInfo.gridAmount; row++) {
             gameInfo.grids[row] = [];
             for (let col = 0; col < gameInfo.gridAmount; col++) {
-                let grid = new Grid(row * gameInfo.gridWidth, col * gameInfo.gridHeight, row, col);
+                let grid = new Grid(row * this.gridWidth, col * this.gridHeight, row, col);
                 gameInfo.grids[row][col] = grid;
                 grid.createTiles();
             }

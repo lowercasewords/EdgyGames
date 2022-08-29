@@ -10,16 +10,19 @@ import { CanvasObj, StyleCanvasObj } from '/js/Games/canvasHelper.js'
  * */
 export class Tile extends StyleCanvasObj{
     constructor(x, y, row, col, linkedGrid) {
-        super(x, y, gameInfo.tileWidth);
+        super(x, y, gameInfo.tileWidth, gameInfo.tileHeight);
+        delete this.width;
+        delete this.height;
+        Tile.prototype.width = gameInfo.tileWidth;
+        Tile.prototype.height = gameInfo.tileHeight;
         this.row = row;
         this.col = col;
         this.linkedGrid = linkedGrid;
-        this.valueHolder = new StyleCanvasObj(this.x + 15, this.y + 30, this.size / 1.5);
+        this.valueHolder = new StyleCanvasObj(this.x + 15, this.y + 30, this.width / 1.5, this.height / 1.5);
         /** Value of the current tile */
         this.valueHolder.value = -1;
     }
     
-
     get value() {
       return this.valueHolder.value;
     }
@@ -28,8 +31,9 @@ export class Tile extends StyleCanvasObj{
      */
     rescaleTile = () => {
         this.x = (this.row * gameInfo.tileWidth) * this.linkedGrid.x;
-        this.y = (this.col * gameInfo.tileWidth) * this.linkedGrid.y;
-        this.size = gameInfo.tileWidth;
+        this.y = (this.col * gameInfo.tileHeight) * this.linkedGrid.y;
+        this.width = gameInfo.tileWidth;
+        this.height = gameInfo.tileHeight;
     };
      /**
      * Has a chance of setting a random value to the tile

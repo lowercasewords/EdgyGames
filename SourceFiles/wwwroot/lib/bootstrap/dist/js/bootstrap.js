@@ -2060,7 +2060,7 @@
     SHOW: "show" + EVENT_KEY$5,
     SHOWN: "shown" + EVENT_KEY$5,
     FOCUSIN: "focusin" + EVENT_KEY$5,
-    RESIZE: "resize" + EVENT_KEY$5,
+    resize: "resize" + EVENT_KEY$5,
     CLICK_DISMISS: "click.dismiss" + EVENT_KEY$5,
     KEYDOWN_DISMISS: "keydown.dismiss" + EVENT_KEY$5,
     MOUSEUP_DISMISS: "mouseup.dismiss" + EVENT_KEY$5,
@@ -2143,7 +2143,7 @@
 
       this._setEscapeEvent();
 
-      this._setResizeEvent();
+      this._setresizeEvent();
 
       $(this._element).on(Event$5.CLICK_DISMISS, Selector$5.DATA_DISMISS, function (event) {
         return _this.hide(event);
@@ -2188,7 +2188,7 @@
 
       this._setEscapeEvent();
 
-      this._setResizeEvent();
+      this._setresizeEvent();
 
       $(document).off(Event$5.FOCUSIN);
       $(this._element).removeClass(ClassName$5.SHOW);
@@ -2319,15 +2319,15 @@
       }
     };
 
-    _proto._setResizeEvent = function _setResizeEvent() {
+    _proto._setresizeEvent = function _setresizeEvent() {
       var _this6 = this;
 
       if (this._isShown) {
-        $(window).on(Event$5.RESIZE, function (event) {
+        $(window).on(Event$5.resize, function (event) {
           return _this6.handleUpdate(event);
         });
       } else {
-        $(window).off(Event$5.RESIZE);
+        $(window).off(Event$5.resize);
       }
     };
 

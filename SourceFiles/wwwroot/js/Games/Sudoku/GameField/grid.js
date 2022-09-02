@@ -1,58 +1,68 @@
-import { CanvasObj, ColorCanvasObj } from '/js/canvas-helper.js'
+import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js';
 import { Tile } from '/js/Games/Sudoku/GameField/tile.js'
-/**
- * Creates a grid object connected to a sudoku map. Asigns values to the tiles
- * @param {Number} tileAmount An amount of tiles in this grid 
+import { gameInfo } from '/js/Games/Sudoku/GameField/main.js'
+ /**
+ * Creates a grid object connected to a sudoku gameInfo. Asigns values to the tiles
  * @param {Number} x x position of this obj (starts to the left)
  * @param {Number} y y position of this obj (starts on top)
  * @param {Number} gridSize the size of this grid
  * (for example if tiles == 3 => grid is 3x3)
- * @param {NUmber} row A map row in which this grid exists
- * @param {NUmber} col A map col in which this grid exists
+ * @param {Number} row A gameInfo row in which this grid exists
+ * @param {Number} col A gameInfo col in which this grid exists
+ * @param {String} outlineColor optional outline color
+ * @param {String} fillColor optional fill color
  * */
- export function Grid(linkedMap, tileAmount, x, y, gridSize, row, col, outlineColor, fillColor) {
-    Object.setPrototypeOf(this, new ColorCanvasObj(parseInt(x), parseInt(y), parseInt(gridSize), outlineColor, fillColor));
-    
-    this.linkedMap = linkedMap;
-    this.gridSize = parseInt(gridSize);
-    /** Tiles the current grid obj consists of */
-    this.tiles = [];
-    this.tileSize = (this.size / 3) - 1;
-    this.row = row;
-    this.col = col;
-    /**
-     * 
-     */
-    this.rescaleAsync = (tileRow, tileCol) => {
-        this.x = this.row * map.gridSize;
-        this.y = this.col * map.gridSize;
-        this.size = this.linkedMap.gridSize;
-        this.tiles[tileRow][tileCol].rescaleAsync(tileRow, tileCol);
+export class Grid extends ColorCanvasObj{
+    constructor(x, y, gridSize, row, col, outlineColor = null, fillColor = null) {
+        super(parseInt(x), parseInt(y), parseInt(gridSize), outlineColor, fillColor);
+        this.row = row;
+        this.col = col;
+        this.gridSize = gridSize;
+        /** Tiles the current grid obj consists of */
+        this.tiles = [];
+        
+        console.log(`x: ${this.x}\n${this.y}`);
     }
-    /** 
+    
+    /**
      * Populates the current grid obj with tile objs
-     * */ 
-    this.createTiles = () => {
-        for (let tileRow = 0; tileRow < tileAmount; tileRow++) {
+     * */
+    createTiles = () => {
+        Grid.updateTileSize();
+        for (let tileRow = 0; tileRow < gameInfo.tileAmount; tileRow++) {
             this.tiles[tileRow] = [];
-            for (let tileCol = 0; tileCol < tileAmount; tileCol++) {
-                let tile = new Tile(this, x + (this.tileSize * tileRow), y + (this.tileSize * tileCol), this.tileSize, tileRow, tileCol, 'black', '#F5F5F5');
+            for (let tileCol = 0; tileCol < gameInfo.tileAmount; tileCol++) {
+                let tile = new Tile(this, x + (Grid.tileSize * tileRow), y + (Grid.tileSize * tileCol), tileRow, tileCol, 'black', '#F5F5F5');
                 this.tiles[tileRow][tileCol] = tile;
             }
         }
-    }
+    };
+    /**
+     * Recales the current grid
+     */
+     rescaleAsync = (tileRow, tileCol) => {
+        // console.log(`before: ${proto.x}, ${proto.y}: ${proto.size}`);
+        this.x = this.row * gameInfo.gridSize;
+        this.y = this.col * gameInfo.gridSize;
+        this.size = gameInfo.gridSize;
+        gameInfo.updateTileSize();
+        // console.log(`after: ${proto.x}, ${proto.y}: ${proto.size}`);
+        // console.log(`in prototype: ${p.x}, ${p.y}: ${p.size}`);
+        this.tiles[tileRow][tileCol].rescaleAsync();
+    };
+
     /**
      * Checks if the specific value is unique in the same grid
      * @param {Number} value A value to be checked
      * @returns Whether or not the value was unique
      */
-    this.checkGridValues = (value) => {
+    checkGridValues = (value) => {
         console.log(`still trying ${value}`);
-        return new Promise((resolve, reject) => { 
+        return new Promise((resolve, reject) => {
             // Same-grid check
-            outer:
-            for(let checkTR = 0; checkTR < 3; checkTR++) {
-                for(let checkTC = 0; checkTC < 3; checkTC++) {
+            outer: 
+            for (let checkTR = 0; checkTR < 3; checkTR++) {
+                for (let checkTC = 0; checkTC < 3; checkTC++) {
                     // // If row is undifined, don't check it 
                     // if(this.tiles[checkTR] === undefined) {
                     //     break outer;
@@ -65,7 +75,7 @@ import { Tile } from '/js/Games/Sudoku/GameField/tile.js'
 
                     console.log(`comparing existing ${tile.valueHolder.value} to ${value}`);
                     // Found a repetitive value
-                    if(tile.valueHolder.value == value && tile != null) {
+                    if (tile.valueHolder.value == value && tile != null) {
                         console.log(`found a in-same-grid repeat ${value} at [${this.row}, ${this.col}] {${checkTR}, ${checkTC}}`);
                         resolve(false);
                         return;
@@ -73,66 +83,64 @@ import { Tile } from '/js/Games/Sudoku/GameField/tile.js'
                 }
             }
             resolve(true);
-        });
-    }
-    this.setAllTileValues = () => {
+        }
+    )};
+    setAllTileValues = () => {
         // A random value assignment  
         let count = 0;
-        outer:
+        outer: 
         for (let tileRow = 0; tileRow < tileAmount; tileRow++) {
             for (let tileCol = 0; tileCol < tileAmount; tileCol++) {
-                if(!linkedMap.tryRandomValues(this.row, this.col, tileRow, tileCol)) {
-                    if(count > 10) {
-                        
+                if (!gameInfo.tryRandomValues(this.row, this.col, tileRow, tileCol)) {
+                    if (count > 10) {
                     }
                     console.log(`rejected value at [${this.row}, ${this.col}] {${tileRow}, ${tileCol}}`);
                     break;
                 }
-                else { 
+                else {
                     console.log(`passed value at [${this.row}, ${this.col}] {${tileRow}, ${tileCol}}`);
-
                 }
-                // linkedMap.setTileValue(this.row, this.col, tileRow, tileCol, randInt(9) + 1);
+                // gameInfo.setTileValue(this.row, this.col, tileRow, tileCol, randInt(9) + 1);
             }
         }
-    }
+    };
     /**
      * Keeps trying to asign any possible valid value to a single tile
      * @param {Number} baseTR The tile row of the tile
      * @param {Number} baseTC The tile column of the tile
      * @returns Whether or not it is possible to assign any value
      */
-     this.tryRandomTileValues = (baseTR, baseTC) => {
+    tryRandomTileValues = (baseTR, baseTC) => {
         let value = randInt(9) + 1;
         let count = 0;
-        while(!linkedMap.checkValue(this.row, this.col, baseTR, baseTC, value)) {
+        while (!gameInfo.checkValue(this.row, this.col, baseTR, baseTC, value)) {
             if (++count >= 9) {
-                console.log('exceeded max count');
+                console.log('exceeded max count when adding pre-made values');
                 return false;
             }
             // Tries the next value 
-            if (++value >= 10) { 
+            if (++value >= 10) {
                 value = 1;
             }
         }
-        console.log(`value ${value} is set`)
+        console.log(`value ${value} is set`);
         this.tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
         return true;
-    }
-    /** 
+    };
+    /**
      * Tries to set a value to the tile.
      * @param {Number} baseTR The tile row of the tile
      * @param {Number} baseTC The tile column of the tile
      * @param {String} value value The desired value to be assinged.
      * @returns {Boolean} whether or not the value was placed
     */
-    this.setTileValue = (baseTR, baseTC, value) => {
+    setTileValue = (baseTR, baseTC, value) => {
         /** Continue code if this check has passed (tile value is unique) */
         console.log(`trying to set ${value}`);
-        if(!this.linkedMap.checkValue(this.row, this.col, baseTR, baseTC, value)) {
-            return false;   
+        if (!this.gameInfo.checkValue(this.row, this.col, baseTR, baseTC, value)) {
+            return false;
         }
         this.tiles[baseTR][baseTC].valueHolder.value = value?.toString().substring(0, 1);
         return true;
-    }
+    };
 }

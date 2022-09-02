@@ -1,21 +1,35 @@
-import { canvas, map } from "~js/Games/Sudoku/GameField/main.js"
+import { canvas, ctx, gameInfo } from '/js/Games/Sudoku/GameField/main.js';
+import { mapRenderer } from '/js/Games/Sudoku/GameField/mapRenderer.js';
+import { resize } from '/js/Games/canvasHelper.js';
+
+/**
+ * Corrects the scaling of the canvas elements 
+ */
+function correctCanvas() {
+    resize(canvas, mapRenderer.rescaleAsync);
+    // ctx.fillStyle = 'red';
+    // ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
 
 // Event Handlers
 //--------------------------------------------------\\
+window.addEventListener(('load'), event => {
+    correctCanvas();
+})
 window.addEventListener('resize', (event) => {
-    resizeCanvas();
-    console.log('resized');
+    // ctx.scale(canvas.width, canvas.height);
+    correctCanvas();
 });
 
-window.onkeydown = (event) => {
+window.addEventListener('onkeydown', (event) => {
     // if could set a number to a tile, add it to value pile;
-    if(map.clkdTileInfo?.tile == null) {
+    if(gameInfo.clkdTileInfo?.tile == null) {
         return;
     }
-    let clickedGrid = map.grids[map.clkdTileInfo.gR][map.clkdTileInfo.gC];
-    // tries to set the players value to the tile
+    let clickedGrid = gameInfo.grids[gameInfo.clkdTileInfo.gR][gameInfo.clkdTileInfo.gC];
+     //tries to set the players value to the tile
     if(Tile.prototype.possibleValues.test(event.key) 
-        && clickedGrid.setTileValue(map.clkdTileInfo.tR, map.clkdTileInfo.tC, event.key)) 
+        && clickedGrid.setTileValue(gameInfo.clkdTileInfo.tR, gameInfo.clkdTileInfo.tC, event.key)) 
     {
         mapRenderer.renderClickedTile();
         return;
@@ -25,8 +39,8 @@ window.onkeydown = (event) => {
     // Moving on the board using keyboard keys, instead of clicks
     movingWithKeys: 
     if(/(arrow(up|down|left|right)|[wasd])/.test(key)) {  
-        let gridsLength = map.grids.length;
-        let tilesLength = map.grids[map.clkdTileInfo.gR][map.clkdTileInfo.gC].tiles.length;
+        let gridsLength = gameInfo.grids.length;
+        let tilesLength = gameInfo.grids[gameInfo.clkdTileInfo.gR][gameInfo.clkdTileInfo.gC].tiles.length;
         // 1 == up, 2 == right, 3 == down, 4 == left
         let direction = 0;
         switch (key) {
@@ -59,25 +73,26 @@ window.onkeydown = (event) => {
               grid = direction == 1 || direction == 3 ? 'gC' : 'gR';
 
         // if it's not the last tile in specific direction
-        if(direction == 1 || direction == 4 ? (map.clkdTileInfo[tile] > 0) : (map.clkdTileInfo[tile] < tilesLength - 1)) {
-            direction == 1 || direction == 4 ? map.clkdTileInfo[tile] -= 1 : map.clkdTileInfo[tile] += 1;
+        if(direction == 1 || direction == 4 ? (gameInfo.clkdTileInfo[tile] > 0) : (gameInfo.clkdTileInfo[tile] < tilesLength - 1)) {
+            direction == 1 || direction == 4 ? gameInfo.clkdTileInfo[tile] -= 1 : gameInfo.clkdTileInfo[tile] += 1;
         }
         // if it's the last tile, but there are grids further still
-        else if(direction == 1 || direction == 4 ? map.clkdTileInfo[grid] > 0 : map.clkdTileInfo[grid] < gridsLength - 1) {
-            direction == 1 || direction == 4 ? map.clkdTileInfo[grid] -= 1 : map.clkdTileInfo[grid] += 1;
-            direction == 1 || direction == 4 ? map.clkdTileInfo[tile] = tilesLength - 1 : map.clkdTileInfo[tile] = 0;
+        else if(direction == 1 || direction == 4 ? gameInfo.clkdTileInfo[grid] > 0 : gameInfo.clkdTileInfo[grid] < gridsLength - 1) {
+            direction == 1 || direction == 4 ? gameInfo.clkdTileInfo[grid] -= 1 : gameInfo.clkdTileInfo[grid] += 1;
+            direction == 1 || direction == 4 ? gameInfo.clkdTileInfo[tile] = tilesLength - 1 : gameInfo.clkdTileInfo[tile] = 0;
         }
         // reasigning the reference to a tile itself
-        map.clkdTileInfo.tile = map.grids[map.clkdTileInfo.gR][map.clkdTileInfo.gC].tiles[map.clkdTileInfo.tR][map.clkdTileInfo.tC];
+        gameInfo.clkdTileInfo.tile = gameInfo.grids[gameInfo.clkdTileInfo.gR][gameInfo.clkdTileInfo.gC].tiles[gameInfo.clkdTileInfo.tR][gameInfo.clkdTileInfo.tC];
         mapRenderer.renderMap();
     }
-}
+});
 
-canvas.onclick = (event) => {
+canvas.addEventListener('onclick', (event) => {
     mapRenderer.renderMap();
     const eX = event.offsetX,
           eY = event.offsetY;
-    map.updateClickedTile(eX, eY);
+    gameInfo.updateClickedTile(eX, eY);
     console.log(eX + ", " + eY);
     mapRenderer.renderMap();
-}
+});
+//--------------------------------------------------\\

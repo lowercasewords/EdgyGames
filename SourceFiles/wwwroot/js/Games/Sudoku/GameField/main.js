@@ -9,41 +9,41 @@ export const ctx = canvas.getContext('2d');
 // Percentile chance of a single tile to be filled with deafult value
 let tileChance = 10;
 
-let gridAmount = 3;
-let tileAmount = 3;
-
 /** Represents the single Sudoku Map! When game starts, gameInfo creates nXn 2d array of grids
  * and each one of them has nXn 2d array of tiles (n is a player specified size)
  * Each tile in the grids is filled with values to ensure a possible victory, some 
  * values are then deleted depending on the 'chance' variable
  */
-export const gameInfo = new function () {
-    // Object.setPrototypeOf(this, )
-    this.gridAmount = 3;
-    this.tileAmount = 3;
+export const gameInfo = new class {
+    constructor() {
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+    }
+    /** Info about currently clicked tile */
+    clkdTileInfo = null;
 
     /** 2d array of gameInfo grids */
-    this.grids = [];
-    /** Physical size of the game gameInfo */
-    this.size = canvas.width;
-    /** Physical size of each grid in pixels */
-    this.gridSize = null;
-    /** Info about currently clicked tile */
-    this.clkdTileInfo = {
-        tile : null,
-        gR : null,
-        gC : null,
-        tC : null,
-        tR : null 
-    }
+    grids = [];
     
-    this.startGame = (gridAmount = 3, tileAmount = 3) => {
+    gridWidth = canvas.width / 3 - 1;
+    gridHeight = canvas.height / 3 - 1;
+    tileWidth = this.gridWidth / 3 - 1;
+    tileHeight = this.gridHeight / 3 - 1;
+
+    /** Amount of grids SQUARED */
+    gridAmount = 3;
+    /** Amount of tiles SQUARED */
+    tileAmount = 3;
+    
+    startGame = (gridAmount = 3, tileAmount = 3) => {
         this.gridAmount = gridAmount;
         this.tileAmount = tileAmount;
-        createBoard();
+        this.createBoard();
         mapRenderer.renderMap();
+        console.log('Game starts!');
+        console.info(gameInfo);
     }
-    this.endGame = () => {
+    endGame = () => {
         throw new Error('Nothing was implemented yet!');
     }
     /**
@@ -51,48 +51,52 @@ export const gameInfo = new function () {
      * @param {Number} gridAmount amount of grids
      * @param {Number} tileAmount amount of tiles 
      */
-    function createBoard() {
+    createBoard = () => {
         // ctx.lineWidth = 3;
-        updateSize();
+        // gameInfo.updateSize();
         for (let row = 0; row < gameInfo.gridAmount; row++) {
             gameInfo.grids[row] = [];
             for (let col = 0; col < gameInfo.gridAmount; col++) {
-                let grid = new Grid(gameInfo.tileAmount, row * gameInfo.gridSize, col * gameInfo.gridSize, this.gridSize, row, col, 'null' , 'pink');
+                let grid = new Grid(row * this.gridWidth, col * this.gridHeight, row, col);
                 gameInfo.grids[row][col] = grid;
                 grid.createTiles();
             }
         }
+        // gameInfo.updateSize();
     }
     
     /**
      * Rescales the size of the gameInfo an its components to fit the canvas
      */
-    this.rescaleAsync = () => {
-        updateSize();
-        for (let gridRow = 0; gridRow < this.grids.length; gridRow++) {
-            for (let gridCol = 0; gridCol < this.grids[gridRow].length; gridCol++) {
-                let grid = this.grids[gridRow][gridCol];
-                // new Promise((resolve, reject) => 
-                grid.rescaleAsync(gridRow, gridCol)
-                // );
+    rescaleAsync = async () => {
+        // gameInfo.updateSize();
+        for (let gridRow = 0; gridRow < gameInfo.grids.length; gridRow++) {
+            for (let gridCol = 0; gridCol < gameInfo.grids[gridRow].length; gridCol++) {
+                let grid = gameInfo.grids[gridRow][gridCol];
+                await new Promise((resolve, reject) => {
+                        grid.rescaleGridAsync(gridRow, gridCol)
+                        resolve();
+                    }
+                );
             }
         }
     }
-    // Update methods
-    //------------------------------------------\\
     /** 
      * Updates grid size and ALL ITS COMPONENTS
      */
-    function updateSize() {
-        gameInfo.gridSize = canvas.width / gameInfo.gridAmount - 1;
-    }
-    
+    // updateSize() {
+    //     console.info(`canvas.width = ${canvas.width}`);
+    //     console.info(`canvas.offsetWidth: ${canvas.offsetWidth}`);
+    //     console.info(`canvas.clientWidth: ${canvas.clientWidth}`);
+    //     gameInfo.gridWidth = canvas.width / gameInfo.gridAmount - 1;
+    //     gameInfo.tileWidth = gameInfo.gridWidth / gameInfo.tileAmount - 1;
+    // }
     /**
      * Updates the clicked tile object 
      * @param {Number} x-coordinate of the click
      * @param {Number} y-coodrinate of the click
      */
-     this.updateClickedTile = (clickX, clickY) => {
+    updateClickedTile = (clickX, clickY) =>{
         for (let gR = 0; gR < gameInfo.grids.length; gR++) {
             for (let gC = 0; gC < gameInfo.grids[gR].length; gC++) {
                 let tiles = gameInfo.grids[gR][gC].tiles;
@@ -101,28 +105,15 @@ export const gameInfo = new function () {
                     {
                         if (tiles[tR][tC].inShape(clickX, clickY)) 
                         {
-                            this.clkdTileInfo.tile = tiles[tR][tC];
-                            this.clkdTileInfo.gR = gR;
-                            this.clkdTileInfo.gC = gC;
-                            this.clkdTileInfo.tC = tC;
-                            this.clkdTileInfo.tR = tR;
+                            gameInfo.clkdTileInfo.tile = tiles[tR][tC];
                             return;
                         }
                     }
                 }
             }
         }
-        this.clkdTileInfo.tile = null;
-        this.clkdTileInfo.gR = null;
-        this.clkdTileInfo.tC = null;
-        this.clkdTileInfo.gC = null;
-        this.clkdTileInfo.tR = null;
     }
-    //------------------------------------------//
 
-
-    // Value check methods
-    //------------------------------------------------------------------------\\
     /** 
      * Checks whether or not the value is not repeating accross the gameInfo or inside of its grid
      * @param {Number} baseGR The grid row of the tile
@@ -131,11 +122,10 @@ export const gameInfo = new function () {
      * @param {Number} baseGC The tile column of the tile
      * @returns True if value is not repeating -> value was set to a tile, otherwise false
      */
-    this.checkValue = async (baseGR, baseGC, baseTR, baseTC, value) => {
-        let horizCheck = checkValuesHoriz(this.grids, baseGR, baseGC, baseTR, baseTC, value);
-        let vertCheck = checkValuesVert(this.grids, baseGR, baseGC, baseTR, baseTC, value);
-        
-        let gridCheck = this.grids[baseGR][baseGC].checkGridValues(value);
+    checkValue = async (baseGR, baseGC, baseTR, baseTC, value) => {
+        let horizCheck = checkValuesHoriz(gameInfo.grids, baseGR, baseGC, baseTR, baseTC, value);
+        let vertCheck = checkValuesVert(gameInfo.grids, baseGR, baseGC, baseTR, baseTC, value);
+        let gridCheck = gameInfo.grids[baseGR][baseGC].checkGridValues(value);
         return (await Promise.all([horizCheck, vertCheck, gridCheck])).every(result => result == true);
     }
     /**
@@ -147,7 +137,7 @@ export const gameInfo = new function () {
      * @param {Number} value The value to be checked
      * @returns Whether or not the value is unique horizontally
      */
-    function checkValuesHoriz(grids, baseGR, baseGC, baseTR, baseTC, value) {
+    checkValuesHoriz = async (grids, baseGR, baseGC, baseTR, baseTC, value) => {
         return new Promise((resolve, rejected) => {
             // Horizontal Check
             for (let checkGR = 0; checkGR < grids.length; checkGR++) {
@@ -160,11 +150,11 @@ export const gameInfo = new function () {
                     }
                     // skips base tile & tiles with no value
                     if(checkGR == baseGR && checkTR == baseTR 
-                        || tiles[checkTR][baseTC]?.valueHolder.value == undefined) {
+                        || tiles[checkTR][baseTC]?.value == undefined) {
                         continue;
                     }
                     // if a repeating one
-                    if(tiles[checkTR][baseTC].valueHolder.value == value) {
+                    if(tiles[checkTR][baseTC].value == value) {
                         resolve(true);
                         return;
                     }
@@ -182,12 +172,12 @@ export const gameInfo = new function () {
      * @param {Number} value The value to be checked
      * @returns Whether or not the value is unique vertically
      */
-    function checkValuesVert(grids, baseGR, baseGC, baseTR, baseTC, value) {
+    checkValuesVert = (grids, baseGR, baseGC, baseTR, baseTC, value) => {
         // Vertical Check
         return new Promise((resolve, reject) => {
             for (let checkGC = 0; checkGC < grids[baseGR].length; checkGC++) {
                 let tiles = grids[baseGR][checkGC].tiles;
-                console.log(tiles);
+                
                 for(let checkTC = 0; checkTC < grids[baseGR][checkGC].tiles[baseTR].length; checkTC++) {
                     // skips non-existing grids
                     if(grids[baseGR][checkGC] == undefined && baseGC != checkGC) {
@@ -196,11 +186,11 @@ export const gameInfo = new function () {
                     }
                     // skips base tile & tiles with no value
                     if(checkGC == baseGC && checkTC == baseTC 
-                        || tiles[baseTR][checkTC]?.valueHolder.value == undefined) {
+                        || tiles[baseTR][checkTC]?.value == undefined) {
                             continue;
                     }
                     // if a repeating one
-                    if(tiles[baseTR][checkTC].valueHolder.value == value) {
+                    if(tiles[baseTR][checkTC].value == value) {
                         resolve(false);
                         return;
                     }
@@ -209,14 +199,13 @@ export const gameInfo = new function () {
             resolve(true);
         });
     }
-    //------------------------------------------------------------------------//
 }
 
-console.debug(gameInfo)
+
 /**
  *  @param {any} n Max number for the range (excluded)
  *  @return {Number} Returns random integer from 0 to n (excluded)
  */
 function randInt(n) {
     return Math.floor(Math.random() * n)
-};
+}

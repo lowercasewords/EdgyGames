@@ -1,81 +1,82 @@
-import { CanvasObj, ColorCanvasObj } from '/js/Games/canvasHelper.js'
+import { canvas } from './main.js';
+import { CanvasObj, StyleCanvasObj, rescaleCanvas } from '/js/Games/canvasHelper.js'
 import { gameInfo, ctx } from '/js/Games/Sudoku/GameField/main.js';
 /** 
  * Contains handle method to draw everything on the gameInfo!
  * */
-export const mapRenderer = new function () {
+export const mapRenderer = {
     /** Renders the board up-to-date */
-    this.renderMap = () => {
+    renderMap: () => {
+        rescaleCanvas(canvas);
         // Render each grid and tile
         gameInfo.grids.forEach(_ => _.forEach(grid => {
-            this.renderGrid(grid);
+            mapRenderer.renderGrid(grid);
         }));
         // Render selection
         if(gameInfo.clkdTileInfo != null) {
-            this.rendrerCrossTiles(
-                gameInfo.clkdTileInfo.gR, 
-                gameInfo.clkdTileInfo.gC, 
-                gameInfo.clkdTileInfo.tR,
-                gameInfo.clkdTileInfo.tC
+            mapRenderer.rendrerCrossTiles(
+                gameInfo.clkdTileInfo.row, 
+                gameInfo.clkdTileInfo.col, 
+                gameInfo.clkdTileInfo.linkedGrid.row,
+                gameInfo.clkdTileInfo.linkedGrid.col
                 );
-            this.renderClickedTile();
+            mapRenderer.renderClickedTile();
         }
-        console.log("gameInfo rendererd")
-    }
-    /**
-     * Asyncronously rescales the components to match the intended position on the canvas, 
-     * usually done window on resize
-     */
-    this.rescaleAsync = () => {
-        gameInfo.rescaleAsync();
-        this.renderMap();
-    }
+        console.info(`canvas.width ${canvas.width} | canvas.height: ${canvas.height}`);
+        console.info(`canvas.clientWidth ${canvas.clientWidth} | canvas.clientWidth: ${canvas.clientHeight}`);
+    },
     /** 
      * Renders the grid with its tiles
      * @param {Grid} grid Grid to render
      */
-    this.renderGrid = (grid) => {
+    renderGrid: (grid) => {
+        ctx.lineWidth = 2;
         grid.tiles.forEach(_ => _.forEach(tile => {
-            this.renderTile(tile);
+            grid.outline(ctx, 'red');
+            ctx.fillStyle = 'yellow';
+            ctx.fillRect(grid.x, grid.y, 5, 5);
+            ctx.fillStyle = 'green';
+            ctx.fillRect(grid.x + grid.width, grid.y + grid.height, 5, 5);
+            mapRenderer.renderTile(tile);
         }));
-    }
+    },
     /**
      * Renders individual tile
      * @param {Tile} tile tile to render
      */
-    this.renderTile = (tile) => {
-        ctx.lineWidth = 15;
+    renderTile: (tile) => {
+        ctx.lineWidth = 2;
+        tile.fill(ctx);
         tile.outline(ctx, 'black');
-        tile.fill(ctx, 'blue')
-        this.renderTileValue(tile);
-    }
+        mapRenderer.renderTileValue(tile);
+    },
     /**
      * Renders the value of specified tile
      * @param {Tile} tile the tile which value should be rendered
      */
-    this.renderTileValue = (tile) => {
-        // if this tile has a value
-        if(tile.valueHolder.value == null) {
+    renderTileValue: (tile) => {
+        // if mapRenderer tile has a value
+        if(tile.value == null) {
             return;
         }
         // ctx.textAlign = 'center';
         ctx.fillStyle = 'brown'
         ctx.font = '35px arial';
-        ctx.fillText(tile.valueHolder.value,
+        ctx.fillText(tile.value,
             tile.valueHolder.x,
             tile.valueHolder.y);
-    }
+    },
     /**
      * Renderes the selected tile with the value
      * */
-    this.renderClickedTile = () => {
+    renderClickedTile: () => {
         if(gameInfo.clkdTileInfo.tile == null) {
             return;
         }
         let clickedTile = gameInfo.clkdTileInfo.tile;
         clickedTile.outline(ctx, null);
         clickedTile.fill(ctx, 'blue');
-        this.renderTileValue(clickedTile);
+        mapRenderer.renderTileValue(clickedTile);
     },
     /**
      * Visiually highlights all cross tiles, relative to the base tile
@@ -84,7 +85,7 @@ export const mapRenderer = new function () {
      * @param {Number} baseTR tile row of the base tile
      * @param {Number} baseTC tile col of the base tile
      */
-    this.rendrerCrossTiles = (baseGR, baseGC, baseTR, baseTC) => {
+    rendrerCrossTiles: (baseGR, baseGC, baseTR, baseTC) => {
         function highlightTile(tile) {
             tile.fill(ctx, '#e3e3c7');
         }
@@ -107,7 +108,7 @@ export const mapRenderer = new function () {
                         (currGR == baseGR && currTR == baseTR) || 
                         (currGC == baseGC && currTC == baseTC)) {
                             highlightTile(grid.tiles[currTR][currTC]);
-                            this.renderTileValue(grid.tiles[currTR][currTC]);
+                            mapRenderer.renderTileValue(grid.tiles[currTR][currTC]);
                         }
                     }
                 }
